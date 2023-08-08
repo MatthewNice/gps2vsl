@@ -54,7 +54,7 @@ def gps_fix_callback(data):
     if count >= len_history:
         heading = get_heading(last_lons, last_lats)
 
-        self.heading_pub.publish(heading)
+        heading_pub.publish(int(heading))
 
     if count < len_history:
         count +=1
@@ -95,7 +95,8 @@ class gps2head:
         rospy.Subscriber(gps_fix_topic, NavSatFix, gps_fix_callback)
         rospy.Subscriber(gps_fix_time_reference_topic, TimeReference, gps_fix_time_reference_callback)
 
-        self.heading_pub = rospy.Publisher('/heading', Int16, queue_size=10)
+        global heading_pub
+        heading_pub = rospy.Publisher('/heading', Int16, queue_size=10)
         self.rate = rospy.Rate(1)
 
     def loop(self):
