@@ -77,9 +77,11 @@ def get_direction(bearing):
     center_eastbound_bearing=190
     center_westbound_bearing=10
     if abs(bearing-center_eastbound_bearing) < 45:
-        return direction = "e"
+        direction="e"
+        return direction
     elif abs(bearing-center_westbound_bearing) < 45:
-        return direction = "w"
+        direction = "w"
+        return direction
     else:
         return None
 

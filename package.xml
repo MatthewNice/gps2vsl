@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>gps2vsl</name>
+  <version>0.0.0</version>
+  <description>The gps2vsl package</description>
+
+  <maintainer email="matthew.nice@vanderbilt.edu">Matthew Nice</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>rospy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>roscpp</depend>
+  <export>
+  </export>
+</package>

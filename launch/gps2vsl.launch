@@ -1,0 +1,4 @@
+<launch>
+<node pkg="gps2vsl" type="gps2head.py" name="gps2head" output="screen" />
+<node pkg="gps2vsl" type="head2vsl.py" name="head2vsl" output="screen" />
+</launch>
