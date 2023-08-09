@@ -16,8 +16,8 @@ import pandas as pd
 from shapely import LineString,Point
 from shapely.ops import nearest_points
 from shapely import Polygon
-
-f = open('~/catkin_ws/src/gps2vsl/vsl_i24_bounds.json')
+import json
+f = open('/home/circles/catkin_ws/src/gps2vsl/vsl_i24_bounds.json')
 box=json.load(f)
 box_data=box['regions'][0]['data']
 df = pd.DataFrame(columns=['longitude','latitude'],data=box_data)
