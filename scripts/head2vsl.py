@@ -15,7 +15,19 @@ import pandas as pd
 # import shapely
 from shapely import LineString,Point
 from shapely.ops import nearest_points
+from shapely import Polygon
 
+f = open('~/catkin_ws/src/gps2vsl/vsl_i24_bounds.json')
+box=json.load(f)
+box_data=box['regions'][0]['data']
+df = pd.DataFrame(columns=['longitude','latitude'],data=box_data)
+df2 = pd.DataFrame(columns=['latitude','longitude'])
+df2.latitude=df.latitude
+df2.longitude=df.longitude
+swapped_box_values=df2.values.tolist()
+
+i24_bounds = Polygon(swapped_box_values)
+#i24_bounds.covers(Point) #example test of in/out
 
 #read in calc_mm_locations
 mm_locations = pd.read_csv('~/catkin_ws/src/gps2vsl/calc_mm_locations')#set proper file locations
@@ -125,7 +137,7 @@ def findVSL(lat,long, direction, distance_threshold=0.15):
     global mm_linestring
     #use gps_fix and distance of at least ~300m (0.2 mile is a little longer) to set a gantry
     point = Point(lat,long) #i.e. gps_fix
-#    print(point)
+    print('Are you in i-24 bounds? ', i24_bounds.covers(point))
     #find closest point in calc_mm_locations LineString to gps_fix point
     closest_mm = nearest_points(mm_linestring,point)[0] #this Point is the closest value
  #   print("Here is the nearest point:",nearest_points(mm_linestring,point))
