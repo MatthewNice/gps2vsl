@@ -96,7 +96,7 @@ class gps2head:
         rospy.Subscriber(gps_fix_time_reference_topic, TimeReference, gps_fix_time_reference_callback)
 
         global heading_pub
-        heading_pub = rospy.Publisher('/heading', Int16, queue_size=10)
+        heading_pub = rospy.Publisher('/vsl/heading', Int16, queue_size=10)
         self.rate = rospy.Rate(1)
 
     def loop(self):

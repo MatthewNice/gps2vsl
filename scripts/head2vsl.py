@@ -2,7 +2,7 @@
 
 
 import rospy
-from std_msgs.msg import Float64, Int16, String
+from std_msgs.msg import Float64, Int16, String, Bool
 from sensor_msgs.msg import NavSatFix, TimeReference
 import traceback
 import os
@@ -44,7 +44,7 @@ myGantry=None
 
 gps_fix_topic = "gps_fix"
 gps_fix_time_reference_topic = "gps_fix_time"
-bearing_topic = "heading"
+bearing_topic = "vsl/heading"
 velocity_topic = "vel"
 
 gpstime = None
@@ -106,27 +106,49 @@ def get_direction(bearing):
 def get_gantry():
     global last_gantry
     global bearing
+    global in_i24
     #use polygon of I-24 corridor as a bound? not now
     #print('get gantry bearing is:',bearing)
     direction = get_direction(bearing)
     print('direction is ',direction)
     gantry = findVSL(latitude,longitude,direction)
     print('the gantry in range is: ',gantry)
-    if velocity == 0.0:
-        print('we are not moving, just passing the last gantry:', last_gantry)
-        return last_gantry
-    if gantry != None:
-        #update the gantry memory
-        last_gantry = gantry
-        #return the ganty to the gantry topic
-        return gantry
-    elif (direction == None) & (gantry == None):
-        print("I don't know which way I'm going or what I'm near")
+
+    if in_i24: #in polygon
+        if velocity > 0.0: #if moving
+            if direction != None: #known direction
+                if gantry != None: #you are close to a gantry, have a direction, and in i24
+                    last_gantry = gantry #update the gantry memory
+                    return gantry
+                else:
+                    #publish the last value of the gantry, since there is not another clearly assigned
+                    #initially this will be None
+                    print('the set gantry is: ',last_gantry)
+                    return last_gantry
+            else:
+                return last_gantry #return last gantry if you're on i24 and moving
+        else:
+            return last_gantry #keep returning last gantry as vel is 0
     else:
-        #publish the last value of the gantry, since there is not another clearly assigned
-        #initially this will be None
-        print('the set gantry is: ',last_gantry)
+        last_gantry = None #reset the memory for gantry
         return last_gantry
+
+    # print('the gantry in range is: ',gantry)
+    # if velocity == 0.0:
+    #     print('we are not moving, just passing the last gantry:', last_gantry)
+    #     return last_gantry
+    # elif gantry != None: #you are close to a gantry, have a direction, and in i24
+    #     #update the gantry memory
+    #     last_gantry = gantry
+    #     #return the ganty to the gantry topic
+    #     return gantry
+    # elif (direction == None) & (gantry == None):
+    #     print("Direction None, and maybe off I24 or not near Gantry too")
+    # else:
+    #     #publish the last value of the gantry, since there is not another clearly assigned
+    #     #initially this will be None
+    #     print('the set gantry is: ',last_gantry)
+    #     return last_gantry
 
 def findVSL(lat,long, direction, distance_threshold=0.15):
     """This function will return the closest vsl gantry location, if it is within 'distance_threshold' initialized
@@ -137,7 +159,11 @@ def findVSL(lat,long, direction, distance_threshold=0.15):
     global mm_linestring
     #use gps_fix and distance of at least ~300m (0.2 mile is a little longer) to set a gantry
     point = Point(lat,long) #i.e. gps_fix
-    print('Are you in i-24 bounds? ', i24_bounds.covers(point))
+    global in_i24
+    in_i24 = i24_bounds.covers(point)
+    print('Are you in i-24 bounds? ', in_i24)
+    in_i24_pub.publish(in_i24)
+
     #find closest point in calc_mm_locations LineString to gps_fix point
     closest_mm = nearest_points(mm_linestring,point)[0] #this Point is the closest value
  #   print("Here is the nearest point:",nearest_points(mm_linestring,point))
@@ -152,12 +178,13 @@ def findVSL(lat,long, direction, distance_threshold=0.15):
     if mm_filter.shape[0]>0:
         mm=mm_filter.values[0] #this is the closest milemarker
         print('the closest milemarker label is: ',mm)
+        mm_calc_pub.publish(mm)
     #use mm and heading to lookup closest gantry
     if mm !=None:
         direction_vsl_locations = vsl_locations.loc[vsl_locations.latitude==direction]#filter by direction
         min_dist = abs(direction_vsl_locations.calculated_milemarker-mm).min() #distance to closest mm_location in miles
 
-        if (direction_vsl_locations.shape[0]>0) & (min_dist < distance_threshold):
+        if (direction_vsl_locations.shape[0]>0) & (min_dist < distance_threshold) & (in_i24):
             close_gantry = direction_vsl_locations.loc[
                 (direction_vsl_locations.calculated_milemarker-mm == min_dist) |
                 (mm-direction_vsl_locations.calculated_milemarker == min_dist)
@@ -179,7 +206,11 @@ class gps2head:
         rospy.Subscriber(bearing_topic, Int16, bearing_callback)
         rospy.Subscriber(velocity_topic,Float64,velocity_callback)
 
-        self.latest_gantry_pub = rospy.Publisher('/latest_gantry', Int16, queue_size=10) #sample and hold, doest not publish until getting close to one
+        global in_i24_pub
+        in_i24_pub = rospy.Publisher('/vsl/in_i24', Bool, queue_size=10)
+        global mm_calc_pub
+        mm_calc_pub = rospy.Publisher('/vsl/mm_calc', Float64, queue_size=10)
+        self.latest_gantry_pub = rospy.Publisher('/vsl/latest_gantry', Int16, queue_size=10) #sample and hold, doest not publish until getting close to one
         self.rate = rospy.Rate(1)
 
     def loop(self):
