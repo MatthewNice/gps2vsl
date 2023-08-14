@@ -182,7 +182,15 @@ def findVSL(lat,long, direction, distance_threshold=0.15):
     #use mm and heading to lookup closest gantry
     if mm !=None:
         direction_vsl_locations = vsl_locations.loc[vsl_locations.latitude==direction]#filter by direction
-        min_dist = abs(direction_vsl_locations.calculated_milemarker-mm).min() #distance to closest mm_location in miles
+        if direction == "e":
+            # min(filter(lambda x: x > 0, df_percentage_change["Change"]))
+            min_dist = min(filter(lambda x: x > 0, direction_vsl_locations.calculated_milemarker-mm))
+            # min_dist = abs(direction_vsl_locations.calculated_milemarker-mm).min() #distance to closest mm_location in miles
+        elif direction == "w":
+            # min_dist = abs(mm-direction_vsl_locations.calculated_milemarker).min()
+            min_dist = min(filter(lambda x: x > 0, mm-direction_vsl_locations.calculated_milemarker))
+        #the above logic is for choosing  based off of the direction of travel
+        #eastbound is increasing mm, westbound is decreasing mm
 
         if (direction_vsl_locations.shape[0]>0) & (min_dist < distance_threshold) & (in_i24):
             close_gantry = direction_vsl_locations.loc[
@@ -196,7 +204,7 @@ def findVSL(lat,long, direction, distance_threshold=0.15):
         return None
 
 
-class gps2head:
+class head2vsl:
     def __init__(self):
         # global vin
         rospy.init_node('head2vsl', anonymous=True)
@@ -239,7 +247,7 @@ class gps2head:
 
 if __name__ == '__main__':
     try:
-        head = gps2head()
+        head = head2vsl()
         head.loop()
     except Exception as e:
         print(e)

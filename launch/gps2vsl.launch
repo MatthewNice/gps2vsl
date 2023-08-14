@@ -1,4 +1,6 @@
 <launch>
 <node pkg="gps2vsl" type="gps2head.py" name="gps2head" output="screen" />
 <node pkg="gps2vsl" type="head2vsl.py" name="head2vsl" output="screen" />
+<node pkg="gps2vsl" type="vsl2setSpeed.py" name="vsl2setSpeed" output="screen" />
+<node pkg="gps2vsl" type="vslmux.py" name="vslmux" output="screen" />
 </launch>
