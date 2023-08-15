@@ -22,18 +22,34 @@ import json
 gantry_topic = "/vsl/latest_gantry"
 
 gantry = None
-
+mySpeeds = None
 #TODO manage cronjob or looped bash which will pull the data from ransom PhP endpoint
+
+#every 5 seconds, read in the json file
+def getVSLspeeds(sleep_time=5):
+    global mySpeeds
+    while True:
+        try:
+            s = requests.get('http://ransom.isis.vanderbilt.edu/vsl/current_vsl_speeds.json')
+            mySpeeds = s.json()
+            # return s.json()
+        except:
+            print('could not get posted speed json from ransom')
+
+        time.sleep(sleep_time)
 
 def gantry_callback(data):
     global gantry
     gantry = data.data
 
 def get_gantry_set_speed(gantry):
-    f = open('/etc/libpanda.d/vsl_set_speeds.json')
-    mySpeeds=json.load(f)
-    # box_data=box['regions'][0]['data']
+    # f = open('/etc/libpanda.d/current_vsl_speeds.json')
+    # mySpeeds=json.load(f)
+    global mySpeeds
+    global gantry
     # lookup speed from gantry input
+    speed_limits = {i[2]:i[9] for i in mySpeeds}
+    gantry_set_speed = speed_limits[gantry]
 
     return gantry_set_speed
 
