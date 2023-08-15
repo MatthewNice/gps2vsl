@@ -25,7 +25,6 @@ libpanda_controls_allowed = False
 vsl_set_speed = 0
 car_setpoint = 0
 
-
 velocity_topic = "vel"
 # gantry_topic = "/vsl/latest_gantry"
 
@@ -85,10 +84,13 @@ class vslmux:
 
                 if libpanda_controls_allowed:
                     if in_i24:
-                        self.mux_set_speed_pub.publish(int(vsl_set_speed))
+                        print('publishing vsl:', vsl_set_speed)
+                        self.mux_set_speed_pub.publish(int(vsl_set_speed*0.44704))
                     else:
+                        print('publishing car setpoint:',car_setpoint)
                         self.mux_set_speed_pub.publish(int(car_setpoint))
                 else:
+                    print('publising velocity', velocity)
                     self.mux_set_speed_pub.publish(int(velocity))
 
 
