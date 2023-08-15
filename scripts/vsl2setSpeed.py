@@ -23,20 +23,23 @@ gantry_topic = "/vsl/latest_gantry"
 
 gantry = None
 mySpeeds = None
+#myGantrySetSpeed = None
 #TODO manage cronjob or looped bash which will pull the data from ransom PhP endpoint
 
 #every 5 seconds, read in the json file
-def getVSLspeeds(sleep_time=5):
+def getVSLspeeds():
     global mySpeeds
-    while True:
-        try:
-            s = requests.get('http://ransom.isis.vanderbilt.edu/vsl/current_vsl_speeds.json')
-            mySpeeds = s.json()
+#    while not rospy.is_shutdown():
+    try:
+        s = requests.get('http://ransom.isis.vanderbilt.edu/vsl/current_vsl_speeds.json')
+        mySpeeds = s.json()
+        #print('Timer called at'+str(event.current_real))
             # return s.json()
-        except:
-            print('could not get posted speed json from ransom')
+            #print("These are my speeds\n",mySpeeds)
+    except:
+        print('could not get posted speed json from ransom')
 
-        time.sleep(sleep_time)
+        #time.sleep(sleep_time)
 
 def gantry_callback(data):
     global gantry
@@ -46,8 +49,8 @@ def get_gantry_set_speed(gantry):
     # f = open('/etc/libpanda.d/current_vsl_speeds.json')
     # mySpeeds=json.load(f)
     global mySpeeds
-    global gantry
-    # lookup speed from gantry input
+ #   global gantry
+#    # lookup speed from gantry input
     speed_limits = {i[2]:i[9] for i in mySpeeds}
     gantry_set_speed = speed_limits[gantry]
 
@@ -58,20 +61,27 @@ class vsl2setSpeed:
         rospy.init_node('vsl2setSpeed', anonymous=True)
 
         rospy.Subscriber(gantry_topic,Int16,gantry_callback)
+#        rospy.Timer(rospy.Duration(5),getVSLspeeds)
 
         # global in_i24_pub
         # in_i24_pub = rospy.Publisher('/vsl/in_i24', Bool, queue_size=10)
         self.vsl_set_speed_pub = rospy.Publisher('/vsl/set_speed', Int16, queue_size=10) #sample and hold, doest not publish until getting close to one
-        self.rate = rospy.Rate(1)
-
+        self.rate = rospy.Rate(0.2)
+        getVSLspeeds()
     def loop(self):
         while not rospy.is_shutdown():
+            #print('trying stuff')
+            getVSLspeeds()
             try:
                 global gantry
+                myGantrySetSpeed = None
+                #print('The gantry in setspeed is:',gantry)
                 if gantry != None:
+                    print('looking up posted speed at ', gantry)
                     # print('\nis there a gantry?')
                     myGantrySetSpeed = get_gantry_set_speed(gantry)
                 if myGantrySetSpeed != None: #either last gantry closest to, or a new one
+                    print('publishing posted speed:',myGantrySetSpeed)
                     self.vsl_set_speed_pub.publish(myGantrySetSpeed)
 
 
@@ -84,6 +94,7 @@ class vsl2setSpeed:
 if __name__ == '__main__':
     try:
         head = vsl2setSpeed()
+#        getVSLspeeds()
         head.loop()
     except Exception as e:
         print(e)

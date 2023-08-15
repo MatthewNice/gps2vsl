@@ -85,11 +85,11 @@ class vslmux:
 
                 if libpanda_controls_allowed:
                     if in_i24:
-                        self.mux_set_speed_pub.publish(vsl_set_speed)
+                        self.mux_set_speed_pub.publish(int(vsl_set_speed))
                     else:
-                        self.mux_set_speed_pub.publish(car_setpoint)
+                        self.mux_set_speed_pub.publish(int(car_setpoint))
                 else:
-                    self.mux_set_speed_pub.publish(velocity)
+                    self.mux_set_speed_pub.publish(int(velocity))
 
 
             except Exception as e:

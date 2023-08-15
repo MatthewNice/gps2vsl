@@ -107,12 +107,13 @@ def get_gantry():
     global last_gantry
     global bearing
     global in_i24
+    global velocity
     #use polygon of I-24 corridor as a bound? not now
     #print('get gantry bearing is:',bearing)
     direction = get_direction(bearing)
-    print('direction is ',direction)
+#    print('direction is ',direction)
     gantry = findVSL(latitude,longitude,direction)
-    print('the gantry in range is: ',gantry)
+#    print('the gantry in range is: ',gantry)
 
     if in_i24: #in polygon
         if velocity > 0.0: #if moving
@@ -123,7 +124,7 @@ def get_gantry():
                 else:
                     #publish the last value of the gantry, since there is not another clearly assigned
                     #initially this will be None
-                    print('the set gantry is: ',last_gantry)
+ #                   print('the set gantry is: ',last_gantry)
                     return last_gantry
             else:
                 return last_gantry #return last gantry if you're on i24 and moving
@@ -160,8 +161,9 @@ def findVSL(lat,long, direction, distance_threshold=0.15):
     #use gps_fix and distance of at least ~300m (0.2 mile is a little longer) to set a gantry
     point = Point(lat,long) #i.e. gps_fix
     global in_i24
+    min_dist = 1000
     in_i24 = i24_bounds.covers(point)
-    print('Are you in i-24 bounds? ', in_i24)
+  #  print('Are you in i-24 bounds? ', in_i24)
     in_i24_pub.publish(in_i24)
 
     #find closest point in calc_mm_locations LineString to gps_fix point
@@ -177,7 +179,7 @@ def findVSL(lat,long, direction, distance_threshold=0.15):
 #    print(mm)
     if mm_filter.shape[0]>0:
         mm=mm_filter.values[0] #this is the closest milemarker
-        print('the closest milemarker label is: ',mm)
+   #     print('the closest milemarker label is: ',mm)
         mm_calc_pub.publish(mm)
     #use mm and heading to lookup closest gantry
     if mm !=None:
@@ -185,10 +187,12 @@ def findVSL(lat,long, direction, distance_threshold=0.15):
         if direction == "e":
             # min(filter(lambda x: x > 0, df_percentage_change["Change"]))
             min_dist = min(filter(lambda x: x > 0, direction_vsl_locations.calculated_milemarker-mm))
+    #        print('the min dist is',min_dist)
             # min_dist = abs(direction_vsl_locations.calculated_milemarker-mm).min() #distance to closest mm_location in miles
         elif direction == "w":
             # min_dist = abs(mm-direction_vsl_locations.calculated_milemarker).min()
             min_dist = min(filter(lambda x: x > 0, mm-direction_vsl_locations.calculated_milemarker))
+     #       print('the min dist is',min_dist)
         #the above logic is for choosing  based off of the direction of travel
         #eastbound is increasing mm, westbound is decreasing mm
 
@@ -233,7 +237,7 @@ class head2vsl:
                 # assert abs((current_time - gps_update_time).to_sec()) < 30, "GPS data more than 30 seconds old!"
                 # assert abs((current_time - can_update_time).to_sec()) < 30, "CAN data more than 30 seconds old!
                 if latitude != None:
-                    print('\nis there a gantry?')
+      #              print('\nis there a gantry?')
                     myGantry = get_gantry()
                 if myGantry != None: #either last gantry closest to, or a new one
                     self.latest_gantry_pub.publish(myGantry)

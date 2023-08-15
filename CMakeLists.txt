@@ -226,6 +226,14 @@ catkin_install_python(PROGRAMS scripts/head2vsl.py
 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+catkin_install_python(PROGRAMS scripts/vslmux.py
+DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+catkin_install_python(PROGRAMS scripts/vsl2setSpeed.py
+DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 
 
 
