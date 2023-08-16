@@ -195,16 +195,18 @@ def findVSL(lat,long, direction, distance_threshold=0.15):
     #use mm and heading to lookup closest gantry
     if mm !=None:
         direction_vsl_locations = vsl_locations.loc[vsl_locations.latitude==direction]#filter by direction
-        if direction == "e":
+        if direction == "e" & (direction_vsl_locations.shape[0]>0):
             # min(filter(lambda x: x > 0, df_percentage_change["Change"]))
             filt =filter(lambda x: x > 0, direction_vsl_locations.calculated_milemarker-mm)
+            print('filt is:', filt)
             if filt!=None:
                 min_dist = min(filt)
     #        print('the min dist is',min_dist)
             # min_dist = abs(direction_vsl_locations.calculated_milemarker-mm).min() #distance to closest mm_location in miles
-        elif direction == "w":
+        elif direction == "w" & (direction_vsl_locations.shape[0]>0):
             # min_dist = abs(mm-direction_vsl_locations.calculated_milemarker).min()
             filt = filter(lambda x: x > 0, mm-direction_vsl_locations.calculated_milemarker)
+            print('filt is:', filt)
             if filt !=None:
                 min_dist = min(filt)
      #       print('the min dist is',min_dist)
