@@ -80,7 +80,7 @@ def bearing_callback(data):
 
 def velocity_callback(data):
     global velocity
-    velocity = data.data
+    velocity = data.linear.x
 
 def get_direction(bearing):
     #set status of direction as bearing-related switch/case
@@ -226,7 +226,7 @@ class head2vsl:
         rospy.Subscriber(gps_fix_topic, NavSatFix, gps_fix_callback)
         rospy.Subscriber(gps_fix_time_reference_topic, TimeReference, gps_fix_time_reference_callback)
         rospy.Subscriber(bearing_topic, Int16, bearing_callback)
-        rospy.Subscriber(velocity_topic,Float64,velocity_callback)
+        rospy.Subscriber(velocity_topic,Twist,velocity_callback)
 
         global in_i24_pub
         in_i24_pub = rospy.Publisher('/vsl/in_i24', Bool, queue_size=10)
@@ -234,7 +234,7 @@ class head2vsl:
         mm_calc_pub = rospy.Publisher('/vsl/mm_calc', Float64, queue_size=10)
         global vsl_good_pub
         vsl_good_pub = rospy.Publisher('/vsl/vsl_good', Bool, queue_size=10)
-        
+
         self.latest_gantry_pub = rospy.Publisher('/vsl/latest_gantry', Int16, queue_size=10) #sample and hold, doest not publish until getting close to one
         self.rate = rospy.Rate(1)
 
