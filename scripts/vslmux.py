@@ -88,6 +88,7 @@ class vslmux:
                 global car_setpoint
                 global vsl_set_speed
                 global velocity
+                global vsl_good
 
                 # pub_twist = Twist()
                 pub_float = Float64()
