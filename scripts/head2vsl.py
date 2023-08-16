@@ -108,31 +108,41 @@ def get_gantry():
     global bearing
     global in_i24
     global velocity
+    global vsl_good_pub
     #use polygon of I-24 corridor as a bound? not now
     #print('get gantry bearing is:',bearing)
     direction = get_direction(bearing)
 #    print('direction is ',direction)
     gantry = findVSL(latitude,longitude,direction)
 #    print('the gantry in range is: ',gantry)
-
+    vsl_good = False
     if in_i24: #in polygon
         if velocity > 0.0: #if moving
             if direction != None: #known direction
                 if gantry != None: #you are close to a gantry, have a direction, and in i24
                     last_gantry = gantry #update the gantry memory
-                    return gantry
-                else:
-                    #publish the last value of the gantry, since there is not another clearly assigned
-                    #initially this will be None
- #                   print('the set gantry is: ',last_gantry)
-                    return last_gantry
-            else:
-                return last_gantry #return last gantry if you're on i24 and moving
-        else:
-            return last_gantry #keep returning last gantry as vel is 0
+                    # vsl_good = true
+                    # return gantry
+ #                else:
+ #                    #publish the last value of the gantry, since there is not another clearly assigned
+ #                    #initially this will be None
+ # #                   print('the set gantry is: ',last_gantry)
+ #                    return last_gantry
+            # else:
+            #     return last_gantry #return last gantry if you're on i24 and moving
+        # else:
+        #     return last_gantry #keep returning last gantry as vel is 0
     else:
         last_gantry = None #reset the memory for gantry
-        return last_gantry
+        # return last_gantry
+
+    # publish vsl_good
+    if last_gantry!=None:
+        vsl_good=True
+    vsl_good_pub.publish(vsl_good)
+
+    return last_gantry
+
 
     # print('the gantry in range is: ',gantry)
     # if velocity == 0.0:
@@ -222,6 +232,9 @@ class head2vsl:
         in_i24_pub = rospy.Publisher('/vsl/in_i24', Bool, queue_size=10)
         global mm_calc_pub
         mm_calc_pub = rospy.Publisher('/vsl/mm_calc', Float64, queue_size=10)
+        global vsl_good_pub
+        vsl_good_pub = rospy.Publisher('/vsl/vsl_good', Bool, queue_size=10)
+        
         self.latest_gantry_pub = rospy.Publisher('/vsl/latest_gantry', Int16, queue_size=10) #sample and hold, doest not publish until getting close to one
         self.rate = rospy.Rate(1)
 

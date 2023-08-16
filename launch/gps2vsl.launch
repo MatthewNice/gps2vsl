@@ -1,6 +1,15 @@
 <launch>
+  <arg name="connect_mux" default="false"/>
+
 <node pkg="gps2vsl" type="gps2head.py" name="gps2head" output="screen" />
 <node pkg="gps2vsl" type="head2vsl.py" name="head2vsl" output="screen" />
 <node pkg="gps2vsl" type="vsl2setSpeed.py" name="vsl2setSpeed" output="screen" />
-<node pkg="gps2vsl" type="vslmux.py" name="vslmux" output="screen" />
+<node pkg="gps2vsl" type="vslmux.py" name="vslmux" output="screen">
+  <!-- remapping output to go to velocity_controller_node and cbf -->
+  <!-- <remap if="$(arg connect_mux)" from="/mux/set_speed" to="/cmd_vel"/> -->
+  <!-- <remap if="$(arg vsl_test)" from="/mux/set_speed" to="/cmd_vel"/> -->
+</node>
+<node pkg="gps2vsl" type="float2twist.py" name="float2twist" output="screen">
+  <remap if="$(eval not vsl_hwil_test)" from="/vsl/twist_out" to="/cmd_vel"/>
+</node>
 </launch>
