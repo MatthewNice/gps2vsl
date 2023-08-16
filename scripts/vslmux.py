@@ -25,6 +25,8 @@ libpanda_controls_allowed = False
 vsl_set_speed = 0
 car_setpoint = 0
 
+vsl_good = False
+
 velocity_topic = "vel"
 # gantry_topic = "/vsl/latest_gantry"
 
@@ -41,7 +43,7 @@ vsl_good_topic = "/vsl/vsl_good"
 # gantry = None
 def velocity_callback(data):
     global velocity
-    velocity = data.data
+    velocity = data.linear.x
 
 def in_i24_callback(data):
     global in_i24
@@ -73,7 +75,7 @@ class vslmux:
         # rospy.Subscriber(libpanda_controls_allowed_topic,Bool,libpanda_controls_allowed_callback)
         rospy.Subscriber(vsl_set_speed_topic,Int16,vsl_set_speed_callback)
         rospy.Subscriber(car_setpoint_topic,Point,car_setpoint_callback)
-        rospy.Subscriber(velocity_topic,Float64,velocity_callback)
+        rospy.Subscriber(velocity_topic,Twist,velocity_callback)
         rospy.Subscriber(vsl_good_topic,Bool,vsl_good_callback)
 
         #map this to the desired speed topic
