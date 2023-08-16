@@ -199,18 +199,18 @@ def findVSL(lat,long, direction, distance_threshold=0.15):
             # min(filter(lambda x: x > 0, df_percentage_change["Change"]))
             filt =lambda l: [i for i in l if i < 0]#filter(lambda x: x > 0, direction_vsl_locations.calculated_milemarker-mm)
             filt_vals = filt(direction_vsl_locations.calculated_milemarker-mm)
-            print('filt is:', filt)
+            # print('filt is:', filt)
             if len(filt_vals)>0:
-                min_dist = min(filt)
+                min_dist = min(filt_vals)
     #        print('the min dist is',min_dist)
             # min_dist = abs(direction_vsl_locations.calculated_milemarker-mm).min() #distance to closest mm_location in miles
         elif (direction == "w") & (direction_vsl_locations.shape[0]>0):
             # min_dist = abs(mm-direction_vsl_locations.calculated_milemarker).min()
             filt =lambda l: [i for i in l if i < 0]#filter(lambda x: x > 0, direction_vsl_locations.calculated_milemarker-mm)
             filt_vals = filt(mm-direction_vsl_locations.calculated_milemarker)
-            print('filt is:', filt)
+            # print('filt is:', filt)
             if len(filt_vals)>0:
-                min_dist = min(filt)
+                min_dist = min(filt_vals)
      #       print('the min dist is',min_dist)
         #the above logic is for choosing  based off of the direction of travel
         #eastbound is increasing mm, westbound is decreasing mm
