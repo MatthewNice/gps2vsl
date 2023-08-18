@@ -19,7 +19,7 @@ from shapely.ops import nearest_points
 from shapely import Polygon
 import json
 userFile = open('/etc/libpanda.d/libpanda_usr','r')
-user = userFile.read()
+user = userFile.read().rstrip('\n\r')
 userFile.close()
 f = open('/home/' + user + '/catkin_ws/src/gps2vsl/vsl_i24_bounds.json')
 box=json.load(f)
