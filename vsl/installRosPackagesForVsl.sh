@@ -36,7 +36,7 @@ do
     echo "Checking ${owner}/${repository} with hash ${versionHash}"
 
     if [ -d ${repository} ]; then
-        cd ${repository}
+        pushd ${repository}
         GIT_VERSION=$(git rev-parse HEAD | tr -d "\n\r")
         if [ "$GIT_VERSION" != "$versionHash" ]; then
             echo " - Mismatch in hash, checking out specified commit..."
@@ -45,12 +45,12 @@ do
         else
             echo " - Already on the right commit!"
         fi
-        cd ..
+        popd
     else
         git clone "https://github.com/${owner}/${repository}.git"
-        cd ${repository}
+        pushd ${repository}
         git checkout ${versionHash}
-        cd ..
+        popd
     fi
 done < $ROS_PACKAGE_REPOSITORY_CSV
 
@@ -89,10 +89,10 @@ do
     repository=$2
     versionHash=$3
 
-    cd ${repository}
+    pushd ${repository}
     GIT_VERSION=$(git rev-parse HEAD | tr -d "\n\r")
     sudo sh -c "echo -n ${GIT_VERSION} > /etc/libpanda.d/git_hashes/${repository}"
-    cd ..
+    popd ..
 
     echo "Saved hash for ${owner}/${repository}"
 done < $ROS_PACKAGE_REPOSITORY_CSV
