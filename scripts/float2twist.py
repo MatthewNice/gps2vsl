@@ -24,8 +24,8 @@ cmd_vel_float= 0.0
 cmd_vel_float_topic = "/ramp_out"
 
 def cmd_vel_callback(data):
-    global cmd_vel
-    cmd_vel = data.data
+    global cmd_vel_float
+    cmd_vel_float = data.data
 
 
 class float2twist:
@@ -36,7 +36,7 @@ class float2twist:
 
         #map this to the desired speed topic
         self.cmd_vel_twist_pub = rospy.Publisher('/vsl/twist_out', Twist, queue_size=10)
-        self.rate = rospy.Rate(1)
+        self.rate = rospy.Rate(10)
 
     def loop(self):
         while not rospy.is_shutdown():

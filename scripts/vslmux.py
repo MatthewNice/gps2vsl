@@ -57,9 +57,9 @@ def vsl_good_callback(data):
     global vsl_good
     vsl_good = data.data
 
-# def libpanda_controls_allowed_callback(data):
-#     global libpanda_controls_allowed
-#     libpanda_controls_allowed = data.data
+def libpanda_controls_allowed_callback(data):
+    global libpanda_controls_allowed
+    libpanda_controls_allowed = data.data
 
 def car_setpoint_callback(data):
     global car_setpoint
@@ -72,9 +72,9 @@ class vslmux:
         rospy.init_node('vslmux', anonymous=True)
 
         rospy.Subscriber(in_i24_topic,Bool,in_i24_callback)
-        # rospy.Subscriber(libpanda_controls_allowed_topic,Bool,libpanda_controls_allowed_callback)
+        rospy.Subscriber(libpanda_controls_allowed_topic,Bool,libpanda_controls_allowed_callback)
         rospy.Subscriber(vsl_set_speed_topic,Int16,vsl_set_speed_callback)
-        rospy.Subscriber(car_setpoint_topic,Point,car_setpoint_callback)
+        rospy.Subscriber(car_setpoint_topic,Twist,car_setpoint_callback)
         rospy.Subscriber(velocity_topic,Twist,velocity_callback)
         rospy.Subscriber(vsl_good_topic,Bool,vsl_good_callback)
 
@@ -94,8 +94,8 @@ class vslmux:
 
                 # pub_twist = Twist()
                 pub_float = Float64()
-                if vsl_good:
-                    if in_i24:
+                if libpanda_controls_allowed:
+                    if vsl_good:
                         print('publishing vsl:', vsl_set_speed)
                         # pub_twist.linear.x = vsl_set_speed*0.44704
                         pub_float.data = vsl_set_speed*0.44704
