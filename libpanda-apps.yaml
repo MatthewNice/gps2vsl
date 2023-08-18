@@ -1,0 +1,4 @@
+apps:
+  - name: vsl
+    properties:
+      - owns_panda: true
