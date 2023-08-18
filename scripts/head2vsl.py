@@ -197,7 +197,7 @@ def findVSL(lat,long, direction, distance_threshold=0.15):
         direction_vsl_locations = vsl_locations.loc[vsl_locations.latitude==direction]#filter by direction
         if (direction == "e") & (direction_vsl_locations.shape[0]>0):
             # min(filter(lambda x: x > 0, df_percentage_change["Change"]))
-            filt =lambda l: [i for i in l if i < 0]#filter(lambda x: x > 0, direction_vsl_locations.calculated_milemarker-mm)
+            filt =lambda l: [i for i in l if i > 0]#filter(lambda x: x > 0, direction_vsl_locations.calculated_milemarker-mm)
             filt_vals = filt(direction_vsl_locations.calculated_milemarker-mm)
             # print('filt is:', filt)
             if len(filt_vals)>0:
@@ -206,7 +206,7 @@ def findVSL(lat,long, direction, distance_threshold=0.15):
             # min_dist = abs(direction_vsl_locations.calculated_milemarker-mm).min() #distance to closest mm_location in miles
         elif (direction == "w") & (direction_vsl_locations.shape[0]>0):
             # min_dist = abs(mm-direction_vsl_locations.calculated_milemarker).min()
-            filt =lambda l: [i for i in l if i < 0]#filter(lambda x: x > 0, direction_vsl_locations.calculated_milemarker-mm)
+            filt =lambda l: [i for i in l if i > 0]#filter(lambda x: x > 0, direction_vsl_locations.calculated_milemarker-mm)
             filt_vals = filt(mm-direction_vsl_locations.calculated_milemarker)
             # print('filt is:', filt)
             if len(filt_vals)>0:
