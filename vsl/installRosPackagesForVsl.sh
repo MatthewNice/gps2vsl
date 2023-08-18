@@ -76,7 +76,7 @@ sudo systemctl enable can
 
 # Hash saving:
 echo "Saving hashes to /etc/libpanda.d/git_hashes/"
-cd ~/catkin_make/src
+cd ~/catkin_ws/src
 sudo mkdir -p /etc/libpanda.d/git_hashes
 while IFS= read -r LINE
 do
