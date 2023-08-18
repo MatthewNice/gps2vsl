@@ -12,7 +12,7 @@ echo "Installing/Updating VSL ROS packages"
 source ~/.bashrc
 
 LIBPANDA_SRC=$(cat /etc/libpanda.d/libpanda_src_dir)
-ROS_PACKAGE_REPOSITORY_CSV=/etc/libpanda.d/apps/cbf/rosRepositories.csv
+ROS_PACKAGE_REPOSITORY_CSV=/etc/libpanda.d/apps/vsl/rosRepositories.csv
 
 cat $ROS_PACKAGE_REPOSITORY_CSV | tr -d " \t\r" | awk -F',' '{print $2 ": " substr($3,1,7)}' | tr '\n' ',' > $LIBPANDA_SRC/scripts/rosRepoShort.txt
 
