@@ -92,7 +92,7 @@ do
     pushd ${repository}
     GIT_VERSION=$(git rev-parse HEAD | tr -d "\n\r")
     sudo sh -c "echo -n ${GIT_VERSION} > /etc/libpanda.d/git_hashes/${repository}"
-    popd ..
+    popd
 
     echo "Saved hash for ${owner}/${repository}"
 done < $ROS_PACKAGE_REPOSITORY_CSV
