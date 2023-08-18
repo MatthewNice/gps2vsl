@@ -18,7 +18,10 @@ from shapely import LineString,Point
 from shapely.ops import nearest_points
 from shapely import Polygon
 import json
-f = open('/home/circles/catkin_ws/src/gps2vsl/vsl_i24_bounds.json')
+userFile = open('/etc/libpanda.d/libpanda_usr','r')
+user = userFile.read()
+userFile.close()
+f = open('/home/' + user + '/catkin_ws/src/gps2vsl/vsl_i24_bounds.json')
 box=json.load(f)
 box_data=box['regions'][0]['data']
 df = pd.DataFrame(columns=['longitude','latitude'],data=box_data)
@@ -31,9 +34,9 @@ i24_bounds = Polygon(swapped_box_values)
 #i24_bounds.covers(Point) #example test of in/out
 
 #read in calc_mm_locations
-mm_locations = pd.read_csv('/home/circles/catkin_ws/src/gps2vsl/calc_mm_locations')#set proper file locations
+mm_locations = pd.read_csv('/home/' + user + '/catkin_ws/src/gps2vsl/calc_mm_locations')#set proper file locations
 #read in the points of the VSL_location
-vsl_locations = pd.read_csv('/home/circles/catkin_ws/src/gps2vsl/vsl_locations')#set proper file locations
+vsl_locations = pd.read_csv('/home/' + user + '/catkin_ws/src/gps2vsl/vsl_locations')#set proper file locations
 
 #pre-sort mm_locations by mm
 mm_locs_sorted = mm_locations.sort_values(by='mm').reset_index(drop=True)
