@@ -23,7 +23,7 @@ if [ ! -d catkin_ws/src ]; then
     
 fi
 cd catkin_ws/src
-catkin_make
+
 
 #while IFS= read -r LINE
 #do
@@ -60,6 +60,8 @@ catkin_make
 
 # Build:
 cd ~/catkin_ws
+source /opt/ros/noetic/setup.bash
+catkin_make
 source devel/setup.sh
 
 
