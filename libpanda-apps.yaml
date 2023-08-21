@@ -15,5 +15,5 @@ apps:
           repo: setpointreader
           branch_or_hash: 235c6863cdd2129bfa4374a64097328ef6eac5d3
         - owner: blegas78
-          repo: gps2vel
+          repo: gps2vsl
           branch_or_hash: app

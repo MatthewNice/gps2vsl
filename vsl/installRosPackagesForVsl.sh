@@ -23,36 +23,36 @@ if [ ! -d catkin_ws/src ]; then
 fi
 cd catkin_ws/src
 
-while IFS= read -r LINE
-do
-    #echo $LINE
-    LINE=$(echo $LINE | tr -d [:space:])
-    IFS=","
-    set -- $LINE
-    IFS=
-    owner=$1
-    repository=$2
-    versionHash=$3
-    echo "Checking ${owner}/${repository} with hash ${versionHash}"
-
-    if [ -d ${repository} ]; then
-        pushd ${repository}
-        GIT_VERSION=$(git rev-parse HEAD | tr -d "\n\r")
-        if [ "$GIT_VERSION" != "$versionHash" ]; then
-            echo " - Mismatch in hash, checking out specified commit..."
-            git pull
-            git checkout ${versionHash}
-        else
-            echo " - Already on the right commit!"
-        fi
-        popd
-    else
-        git clone "https://github.com/${owner}/${repository}.git"
-        pushd ${repository}
-        git checkout ${versionHash}
-        popd
-    fi
-done < $ROS_PACKAGE_REPOSITORY_CSV
+#while IFS= read -r LINE
+#do
+#    #echo $LINE
+#    LINE=$(echo $LINE | tr -d [:space:])
+#    IFS=","
+#    set -- $LINE
+#    IFS=
+#    owner=$1
+#    repository=$2
+#    versionHash=$3
+#    echo "Checking ${owner}/${repository} with hash ${versionHash}"
+#
+#    if [ -d ${repository} ]; then
+#        pushd ${repository}
+#        GIT_VERSION=$(git rev-parse HEAD | tr -d "\n\r")
+#        if [ "$GIT_VERSION" != "$versionHash" ]; then
+#            echo " - Mismatch in hash, checking out specified commit..."
+#            git pull
+#            git checkout ${versionHash}
+#        else
+#            echo " - Already on the right commit!"
+#        fi
+#        popd
+#    else
+#        git clone "https://github.com/${owner}/${repository}.git"
+#        pushd ${repository}
+#        git checkout ${versionHash}
+#        popd
+#    fi
+#done < $ROS_PACKAGE_REPOSITORY_CSV
 
 
 
