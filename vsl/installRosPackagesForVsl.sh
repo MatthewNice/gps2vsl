@@ -12,16 +12,18 @@ echo "Installing/Updating VSL ROS packages"
 source ~/.bashrc
 
 LIBPANDA_SRC=$(cat /etc/libpanda.d/libpanda_src_dir)
-ROS_PACKAGE_REPOSITORY_CSV=/etc/libpanda.d/apps/vsl/rosRepositories.csv
-
-cat $ROS_PACKAGE_REPOSITORY_CSV | tr -d " \t\r" | awk -F',' '{print $2 ": " substr($3,1,7)}' | tr '\n' ',' > $LIBPANDA_SRC/scripts/rosRepoShort.txt
+#ROS_PACKAGE_REPOSITORY_CSV=/etc/libpanda.d/apps/vsl/rosRepositories.csv
+#
+#cat $ROS_PACKAGE_REPOSITORY_CSV | tr -d " \t\r" | awk -F',' '{print $2 ": " substr($3,1,7)}' | tr '\n' ',' > $LIBPANDA_SRC/scripts/rosRepoShort.txt
 
 cd ~
 if [ ! -d catkin_ws/src ]; then
     mkdir -p catkin_ws/src
     source /opt/ros/noetic/setup.bash   # will it always be noetic, in this location?
+    
 fi
 cd catkin_ws/src
+catkin_make
 
 #while IFS= read -r LINE
 #do
@@ -59,6 +61,7 @@ cd catkin_ws/src
 # Build:
 cd ~/catkin_ws
 source devel/setup.sh
+
 
 echo "Regenerating CanToRos"
 cd src/can_to_ros/scripts
