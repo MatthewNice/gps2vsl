@@ -74,27 +74,27 @@ sudo systemctl daemon-reload
 sudo systemctl enable can
 
 
-# Hash saving:
-echo "Saving hashes to /etc/libpanda.d/git_hashes/"
-cd ~/catkin_ws/src
-sudo mkdir -p /etc/libpanda.d/git_hashes
-while IFS= read -r LINE
-do
-    #echo $LINE
-    LINE=$(echo $LINE | tr -d [:space:])
-    IFS=","
-    set -- $LINE
-    IFS=
-    owner=$1
-    repository=$2
-    versionHash=$3
-
-    pushd ${repository}
-    GIT_VERSION=$(git rev-parse HEAD | tr -d "\n\r")
-    sudo sh -c "echo -n ${GIT_VERSION} > /etc/libpanda.d/git_hashes/${repository}"
-    popd
-
-    echo "Saved hash for ${owner}/${repository}"
-done < $ROS_PACKAGE_REPOSITORY_CSV
+## Hash saving:
+#echo "Saving hashes to /etc/libpanda.d/git_hashes/"
+#cd ~/catkin_ws/src
+#sudo mkdir -p /etc/libpanda.d/git_hashes
+#while IFS= read -r LINE
+#do
+#    #echo $LINE
+#    LINE=$(echo $LINE | tr -d [:space:])
+#    IFS=","
+#    set -- $LINE
+#    IFS=
+#    owner=$1
+#    repository=$2
+#    versionHash=$3
+#
+#    pushd ${repository}
+#    GIT_VERSION=$(git rev-parse HEAD | tr -d "\n\r")
+#    sudo sh -c "echo -n ${GIT_VERSION} > /etc/libpanda.d/git_hashes/${repository}"
+#    popd
+#
+#    echo "Saved hash for ${owner}/${repository}"
+#done < $ROS_PACKAGE_REPOSITORY_CSV
 
 echo "----------------------------"
