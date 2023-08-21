@@ -43,6 +43,16 @@ def getVSLspeeds():
 
 def gantry_callback(data):
     global gantry
+    if gantry != data.data:
+        gantry = data.data
+        #there is a new value of gantry
+        myGantrySetSpeed = get_gantry_set_speed(gantry)
+        if myGantrySetSpeed != None: #either last gantry closest to, or a new one
+            myGantrySetSpeed = myGantrySetSpeed*0.44704
+            print('publishing posted speed in m/s:',myGantrySetSpeed)
+        #
+            vsl_set_speed_pub.publish(myGantrySetSpeed)
+
     gantry = data.data
 
 def get_gantry_set_speed(gantry):
@@ -65,7 +75,7 @@ class vsl2setSpeed:
 
         # global in_i24_pub
         # in_i24_pub = rospy.Publisher('/vsl/in_i24', Bool, queue_size=10)
-        self.vsl_set_speed_pub = rospy.Publisher('/vsl/set_speed', Int16, queue_size=10) #sample and hold, doest not publish until getting close to one
+        vsl_set_speed_pub = rospy.Publisher('/vsl/set_speed', Int16, queue_size=10) #sample and hold, doest not publish until getting close to one
         self.rate = rospy.Rate(0.2)
         getVSLspeeds()
     def loop(self):
@@ -76,13 +86,18 @@ class vsl2setSpeed:
                 global gantry
                 myGantrySetSpeed = None
                 #print('The gantry in setspeed is:',gantry)
-                if gantry != None:
+
+                if gantry != None: #updating the known speed limit every 5 seconds
                     print('looking up posted speed at ', gantry)
                     # print('\nis there a gantry?')
                     myGantrySetSpeed = get_gantry_set_speed(gantry)
+
+                    print('The posted speed limit in mph is', myGantrySetSpeed)
                 if myGantrySetSpeed != None: #either last gantry closest to, or a new one
-                    print('publishing posted speed:',myGantrySetSpeed)
-                    self.vsl_set_speed_pub.publish(myGantrySetSpeed)
+                    myGantrySetSpeed = myGantrySetSpeed*0.44704
+                    print('publishing posted speed in m/s:',myGantrySetSpeed)
+
+                    vsl_set_speed_pub.publish(myGantrySetSpeed)
 
 
             except Exception as e:

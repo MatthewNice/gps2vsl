@@ -40,88 +40,52 @@ vsl_set_speed_topic = "/vsl/set_speed"
 in_i24_topic = "/vsl/in_i24"
 vsl_good_topic = "/vsl/vsl_good"
 
-# gantry = None
-def velocity_callback(data):
-    global velocity
-    velocity = data.linear.x
-
-def in_i24_callback(data):
-    global in_i24
-    in_i24 = data.data
-
-def vsl_set_speed_callback(data):
-    global vsl_set_speed
-    vsl_set_speed = data.data
-
-def vsl_good_callback(data):
-    global vsl_good
-    vsl_good = data.data
-
-def libpanda_controls_allowed_callback(data):
-    global libpanda_controls_allowed
-    libpanda_controls_allowed = data.data
-
-def car_setpoint_callback(data):
-    global car_setpoint
-    # car_setpoint = data.y this was for /msg_467 Point input
-    car_setpoint = data.linear.x
-
 
 class vslmux:
     def __init__(self):
         rospy.init_node('vslmux', anonymous=True)
 
-        rospy.Subscriber(in_i24_topic,Bool,in_i24_callback)
-        rospy.Subscriber(libpanda_controls_allowed_topic,Bool,libpanda_controls_allowed_callback)
-        rospy.Subscriber(vsl_set_speed_topic,Int16,vsl_set_speed_callback)
-        rospy.Subscriber(car_setpoint_topic,Twist,car_setpoint_callback)
-        rospy.Subscriber(velocity_topic,Twist,velocity_callback)
-        rospy.Subscriber(vsl_good_topic,Bool,vsl_good_callback)
+        self.pub_float = Float64()
+        self.vsl_good = False
+        self.libpanda_controls_allowed = False
 
         #map this to the desired speed topic
-        self.mux_set_speed_pub = rospy.Publisher('/mux/set_speed', Float64, queue_size=10)
-        self.rate = rospy.Rate(1)
-
-    def loop(self):
-        while not rospy.is_shutdown():
-            try:
-                global libpanda_controls_allowed
-                global in_i24
-                global car_setpoint
-                global vsl_set_speed
-                global velocity
-                global vsl_good
-
-                # pub_twist = Twist()
-                pub_float = Float64()
-                if libpanda_controls_allowed:
-                    if vsl_good:
-                        print('publishing vsl:', vsl_set_speed)
-                        # pub_twist.linear.x = vsl_set_speed*0.44704
-                        pub_float.data = vsl_set_speed*0.44704
-                        # self.mux_set_speed_pub.publish(pub_float)
-                    else:
-                        print('publishing car setpoint:',car_setpoint)
-                        # pub_twist.linear.x = car_setpoint
-                        pub_float.data = car_setpoint
-                        # self.mux_set_speed_pub.publish(pub_float)
-                else:
-                    print('publising velocity', velocity)
-                    # pub_twist.linear.x = velocity
-                    pub_float.data = velocity
-                self.mux_set_speed_pub.publish(pub_float)
+        self.mux_set_speed_pub = rospy.Publisher('/mux/set_speed', Float64, queue_size=1000)
 
 
-            except Exception as e:
-                print(e)
-                traceback.print_exc()
-                print("Something has gone wrong.")
-            self.rate.sleep()
+        # rospy.Subscriber(in_i24_topic,Bool,self.in_i24_callback)
+        rospy.Subscriber(libpanda_controls_allowed_topic,Bool,self.libpanda_controls_allowed_callback)
+        rospy.Subscriber(vsl_set_speed_topic,Int16,self.vsl_set_speed_callback)
+        rospy.Subscriber(car_setpoint_topic,Point,self.car_setpoint_callback)
+        rospy.Subscriber(velocity_topic,Twist,self.velocity_callback)
+        rospy.Subscriber(vsl_good_topic,Bool,self.vsl_good_callback)
+
+    def velocity_callback(data):
+        if !self.libpanda_controls_allowed:
+            self.pub_float.data = data.linear.x#velocity
+            self.mux_set_speed_pub.publish(self.pub_float)
+    def car_setpoint_callback(data):
+        if (self.libpanda_controls_allowed) & (!self.vsl_good):
+            self.pub_float.data = data.linear.x#car_setpoint
+            self.mux_set_speed_pub.publish(self.pub_float)
+    def vsl_set_speed_callback(data):
+        if (self.libpanda_controls_allowed) & (self.vsl_good):
+            self.pub_float.data = data.data #vsl_set_speed
+            self.mux_set_speed_pub.publish(self.pub_float)
+
+    def vsl_good_callback(data):
+        self.vsl_good = data.data
+
+    def libpanda_controls_allowed_callback(data):
+        self.libpanda_controls_allowed = data.data
+
+
 
 if __name__ == '__main__':
     try:
         head = vslmux()
-        head.loop()
+        # head.loop()
+        rospy.spin()
     except Exception as e:
         print(e)
         traceback.print_exc()
