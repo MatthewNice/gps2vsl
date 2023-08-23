@@ -56,7 +56,7 @@ class vslmux:
         # rospy.Subscriber(in_i24_topic,Bool,self.in_i24_callback)
         rospy.Subscriber(libpanda_controls_allowed_topic,Bool,self.libpanda_controls_allowed_callback)
         rospy.Subscriber(vsl_set_speed_topic,Int16,self.vsl_set_speed_callback)
-        rospy.Subscriber(car_setpoint_topic,Point,self.car_setpoint_callback)
+        rospy.Subscriber(car_setpoint_topic,Twist,self.car_setpoint_callback)
         rospy.Subscriber(velocity_topic,Twist,self.velocity_callback)
         rospy.Subscriber(vsl_good_topic,Bool,self.vsl_good_callback)
 
@@ -73,10 +73,10 @@ class vslmux:
             self.pub_float.data = data.data #vsl_set_speed
             self.mux_set_speed_pub.publish(self.pub_float)
 
-    def vsl_good_callback(data):
+    def vsl_good_callback(self, data):
         self.vsl_good = data.data
 
-    def libpanda_controls_allowed_callback(data):
+    def libpanda_controls_allowed_callback(self,data):
         self.libpanda_controls_allowed = data.data
 
 
