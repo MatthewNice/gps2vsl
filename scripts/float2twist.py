@@ -36,7 +36,7 @@ class float2twist:
         self.cmd_vel_twist_pub = rospy.Publisher('/vsl/twist_out', Twist, queue_size=1000)
         # self.rate = rospy.Rate(1)
 
-    def cmd_vel_callback(data):
+    def cmd_vel_callback(self,data):
         global cmd_vel
         # global cmd_vel_float
 
