@@ -2,3 +2,18 @@ apps:
   - name: vsl
     properties:
       - owns_panda: true
+    ros_repositories:
+        - owner: jmscslgroup
+          repo: can_to_ros
+        - owner: jmscslgroup
+          repo: cbf
+          branch_or_hash: 49f281a3718c927b6e2624f0679854347c76105b
+        - owner: jmscslgroup
+          repo: velocity_controller
+          branch_or_hash: 3f8a36192d41b7d454e9f787ff61b99f287e3e0d
+        - owner: jmscslgroup
+          repo: setpointreader
+          branch_or_hash: 235c6863cdd2129bfa4374a64097328ef6eac5d3
+        - owner: blegas78
+          repo: gps2vsl
+          branch_or_hash: app
