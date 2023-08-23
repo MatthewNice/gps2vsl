@@ -19,10 +19,9 @@ LIBPANDA_SRC=$(cat /etc/libpanda.d/libpanda_src_dir)
 cd ~
 if [ ! -d catkin_ws/src ]; then
     mkdir -p catkin_ws/src
-    source /opt/ros/noetic/setup.bash   # will it always be noetic, in this location?
-    
+#    source /opt/ros/noetic/setup.bash   # will it always be noetic, in this location?
 fi
-cd catkin_ws/src
+#cd catkin_ws/src
 
 
 #while IFS= read -r LINE
@@ -57,17 +56,20 @@ cd catkin_ws/src
 #done < $ROS_PACKAGE_REPOSITORY_CSV
 
 
-
-# Build:
 cd ~/catkin_ws
 source /opt/ros/noetic/setup.bash
-catkin_make
-source devel/setup.sh
-
 
 echo "Regenerating CanToRos"
-cd src/can_to_ros/scripts
+cd ~/catkin_ws/src/can_to_ros/scripts
 echo y | ./regenerateCanToRos.sh
+
+
+# Build:
+catkin_make
+#source ~/catkin_ws/devel/setup.sh
+
+
+
 
 #catkin_make #this is redundant, called in regenerate script
 
