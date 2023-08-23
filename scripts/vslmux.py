@@ -61,11 +61,11 @@ class vslmux:
         rospy.Subscriber(vsl_good_topic,Bool,self.vsl_good_callback)
 
     def velocity_callback(self,data):
-        if !self.libpanda_controls_allowed:
+        if not self.libpanda_controls_allowed:
             self.pub_float.data = data.linear.x#velocity
             self.mux_set_speed_pub.publish(self.pub_float)
     def car_setpoint_callback(self,data):
-        if (self.libpanda_controls_allowed) & (!self.vsl_good):
+        if (self.libpanda_controls_allowed) & (not self.vsl_good):
             self.pub_float.data = data.linear.x#car_setpoint
             self.mux_set_speed_pub.publish(self.pub_float)
     def vsl_set_speed_callback(self,data):
