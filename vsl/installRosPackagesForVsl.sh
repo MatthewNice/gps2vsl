@@ -66,6 +66,7 @@ echo y | ./regenerateCanToRos.sh
 
 # Build:
 source ~/catkin_ws/devel/setup.sh
+cd ~/catkin_ws
 catkin_make
 
 
