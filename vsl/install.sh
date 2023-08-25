@@ -11,9 +11,6 @@ LIBPANDA_USER=$(cat /etc/libpanda.d/libpanda_usr)
 
 source /home/$LIBPANDA_USER/.bashrc
 
-apt install -y python3-pandas
-pip3 install cantools shapely
-
 if [ -d /home/$LIBPANDA_USER/strym ]; then
     pushd /home/$LIBPANDA_USER/strym
     git pull
