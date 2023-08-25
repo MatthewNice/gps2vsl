@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "=========================="
-echo "Starting App cbf"
+echo "Starting App VSL"
 
 
 systemctl start can
