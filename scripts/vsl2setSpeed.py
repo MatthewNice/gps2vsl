@@ -43,6 +43,7 @@ def getVSLspeeds():
 
 def gantry_callback(data):
     global gantry
+    global vsl_set_speed_pub
     if gantry != data.data:
         gantry = data.data
         #there is a new value of gantry
@@ -50,7 +51,7 @@ def gantry_callback(data):
         if myGantrySetSpeed != None: #either last gantry closest to, or a new one
             myGantrySetSpeed = myGantrySetSpeed*0.44704
             print('publishing posted speed in m/s:',myGantrySetSpeed)
-        #
+            print('inside gantry publish')
             vsl_set_speed_pub.publish(myGantrySetSpeed)
 
     gantry = data.data
@@ -96,7 +97,7 @@ class vsl2setSpeed:
                 if myGantrySetSpeed != None: #either last gantry closest to, or a new one
                     myGantrySetSpeed = myGantrySetSpeed*0.44704
                     print('publishing posted speed in m/s:',myGantrySetSpeed)
-
+                    print('inside loop publish')
                     vsl_set_speed_pub.publish(myGantrySetSpeed)
 
 
