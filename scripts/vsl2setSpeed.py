@@ -77,7 +77,7 @@ class vsl2setSpeed:
         # global in_i24_pub
         # in_i24_pub = rospy.Publisher('/vsl/in_i24', Bool, queue_size=10)
         global vsl_set_speed_pub
-        vsl_set_speed_pub = rospy.Publisher('/vsl/set_speed', Int16, queue_size=1000) #sample and hold, doest not publish until getting close to one
+        vsl_set_speed_pub = rospy.Publisher('/vsl/set_speed', Float64, queue_size=1000) #sample and hold, doest not publish until getting close to one
         self.rate = rospy.Rate(0.2)
         getVSLspeeds()
     def loop(self):
