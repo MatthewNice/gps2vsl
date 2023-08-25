@@ -80,6 +80,7 @@ class vsl2setSpeed:
         self.rate = rospy.Rate(0.2)
         getVSLspeeds()
     def loop(self):
+        global vsl_set_speed_pub
         while not rospy.is_shutdown():
             #print('trying stuff')
             getVSLspeeds()
