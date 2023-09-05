@@ -11,7 +11,7 @@ apps:
           repo: can_to_ros
         - owner: jmscslgroup
           repo: cbf
-          branch_or_hash: 49f281a3718c927b6e2624f0679854347c76105b
+          branch_or_hash: fdf47d30b3cab8966f7c73f05906cbc726a8b569
         - owner: jmscslgroup
           repo: velocity_controller
         - owner: jmscslgroup
