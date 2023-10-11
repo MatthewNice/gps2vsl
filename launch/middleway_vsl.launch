@@ -1,0 +1,7 @@
+<launch>
+  <!-- launching the old vsl application -->
+  <include file="$(find can_to_ros)/launch/vehicle_control_integrated_cbf_vsl.launch">
+  </include>
+
+  <!-- include the rest of the new nodes and/or launch files -->
+</launch>
