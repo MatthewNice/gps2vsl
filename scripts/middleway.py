@@ -212,7 +212,7 @@ class middleway:
                 prevailing_speed_pub.publish(avg_v)
                 # print('Radar avg: ',avg_v,'Radar STDev: ',std_v)
                 print()
-                print('min: ', np.min(radar_state[2]), 'max: ', np.min(radar_state[2]))
+                print('min: ', np.min(radar_state[2]), 'max: ', np.max(radar_state[2]))
                 print('25th%: ', np.quantile(radar_state[2],0.25),'50th%: ', np.quantile(radar_state[2],0.5),'75th%: ', np.quantile(radar_state[2],0.75))
                 # print(avg_v,social_limit_v,vsl_set_speed,max_speed)
                 practical_vsl_set_speed = vsl_set_speed
