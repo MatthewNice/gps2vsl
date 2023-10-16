@@ -2,7 +2,7 @@
 <launch>
   <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
   <!-- Controller Launches. Velocity Controller, and CBF -->
-  <node pkg="$(find velocity_controller)" type="velocity_controller" name="velocity_controller" output="screen">
+  <node pkg="velocity_controller" type="velocity_controller" name="velocity_controller" output="screen">
 		<remap from="/cmd_accel" to="/cmd_accel_pre"/>
 	</node>
 
@@ -14,10 +14,10 @@
 	<arg name="readonly" default="false"/>
 	<arg name="vsl_hwil_test" default="false"/>
 
-  <node pkg="$(find cbf)" type="cbf" name="cbf" if="$(eval not readonly and hwil)">
+  <node pkg="cbf" type="cbf" name="cbf" if="$(eval not readonly and hwil)">
 	</node>
 
-	<node pkg="$(find cbf)" type="cbf" name="cbf_readonly" if="$(eval not readonly and hwil)">
+	<node pkg="cbf" type="cbf" name="cbf_readonly" if="$(eval not readonly and hwil)">
 		<remap from="/cmd_accel" to="/cmd_accel_null"/>
 	</node>
   <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
@@ -35,7 +35,7 @@
 <!--  <node pkg="can_to_ros" type ="rosbag_record.sh" name="bashscript2" output="screen" args="$(arg description) $(arg hwil)" />-->
 
   <!-- ramp from mux to velocity_controller (PID) -->
-  <node pkg="$(find can_to_ros)" type="ramp" name="ramp" output="screen">
+  <node pkg="can_to_ros" type="ramp" name="ramp" output="screen">
   	<!-- /ramp_in : Float64 -->
   	<remap from="/ramp_in" to="/mux/set_speed"/>
   	<!-- /ramp_out: Float64 -->
@@ -66,7 +66,9 @@
   <node pkg="gps2vsl" type="float2twist.py" name="float2twist" output="screen">
     <remap if="$(eval not vsl_hwil_test)" from="/vsl/twist_out" to="/cmd_vel"/>
   </node>
-  <node pkg="gps2vsl" type="middleway.py" name="middleway" output="screen" />
+  <node pkg="gps2vsl" type="middleway.py" name="middleway" output="screen" respawn="true" respawn_delay="2">
+    <param name="/use_sim_time" value="true"/>
+   </node>
 /
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
