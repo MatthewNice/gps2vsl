@@ -86,7 +86,7 @@ def bearing_callback(data):
 def velocity_callback(data):
     global velocity
     # velocity = data.linear.x
-     velocity = data.data
+    velocity = data.data
 
 def get_direction(bearing):
     #set status of direction as bearing-related switch/case
