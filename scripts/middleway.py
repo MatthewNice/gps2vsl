@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 import rospy
 from std_msgs.msg import Float64, Int16, String, Bool
 from geometry_msgs.msg import PointStamped
@@ -187,7 +186,7 @@ class middleway:
         rospy.Subscriber(radar14_topic,PointStamped,radar14_callback)
         rospy.Subscriber(radar15_topic,PointStamped,radar15_callback)
 
-        middle_set_speed = rospy.Publsher('/vsl/middleway_speed', Float64, queue_size=1000)
+        middle_set_speed = rospy.Publisher('/vsl/middleway_speed', Float64, queue_size=1000)
         # global in_i24_pub
         # in_i24_pub = rospy.Publisher('/vsl/in_i24', Bool, queue_size=10)
         # global vsl_set_speed_pub
