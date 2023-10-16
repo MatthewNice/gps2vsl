@@ -21,7 +21,7 @@ last_lons = [0.0] * len_history #one value added for the last n observations
 bearing = 0.0
 
 
-gps_fix_topic = "gps_fix"
+gps_fix_topic = "/car/gps/fix"#formerly "gps_fix"
 gps_fix_time_reference_topic = "gps_fix_time"
 gpstime = None
 systime = None
