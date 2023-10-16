@@ -195,12 +195,13 @@ class middleway:
 
     def loop(self):
         while not rospy.is_shutdown():
-            global max_speed
-            global social_limit_v
-            global middle_set_speed_pub
             try:
+                global max_speed
+                global social_limit_v
+                global middle_set_speed_pub
+
                 avg_v, std_v = getPrevailingSpeed()
-                print(avg_v)
+                print('Radar avg: ',avg_v,'Radar STDev: ',std_v)
                 middle_set_speed_pub.publish(min(max(avg_v-social_limit_v,vsl_set_speed), max_speed))
             except Exception as e:
                 print(e)
