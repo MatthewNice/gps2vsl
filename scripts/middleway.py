@@ -69,7 +69,11 @@ def distance_lines_callback(data):
     global base_social_limit
     global social_limit_v
     distance_lines = data.data
-    social_limit_v = base_social_limit*distance_lines
+    if distance_lines >0:
+        social_limit_v = base_social_limit*distance_lines
+    else:
+        social_limit_v = base_social_limit
+    print('Social limit is: ',social_limit_v)
 
 def radar0_callback(data):
     global radar0
