@@ -238,6 +238,10 @@ catkin_install_python(PROGRAMS scripts/float2twist.py
 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+catkin_install_python(PROGRAMS scripts/middleway.py
+DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 
 
 
