@@ -40,7 +40,7 @@
   	<remap from="/ramp_in" to="/mux/set_speed"/>
   	<!-- /ramp_out: Float64 -->
   	<!-- <remap if="$(eval not vsl_hwil_test)" from="/ramp_out" to="/cmd_vel"/> -->
-
+    <remap from="/ramp_out" to="/cmd_vel"/>
   	<!-- ramp_max_rate_up: default 1, defines max increase rate of output -->
   	<param name="/ramp_max_rate_up" value="1.5"/>
   	<!-- ramp_max_rate_down: default 1, defines max decrease rate of output -->
@@ -63,12 +63,11 @@
     <!-- remapping subscriber for mux vsl/set_speed becomes vsl/middleway_speed -->
     <remap from="/vsl/set_speed" to="/vsl/middleway_speed"/>
   </node>
-  <node pkg="gps2vsl" type="float2twist.py" name="float2twist" output="screen">
+  <!-- <node pkg="gps2vsl" type="float2twist.py" name="float2twist" output="screen">
     <remap if="$(eval not vsl_hwil_test)" from="/vsl/twist_out" to="/cmd_vel"/>
-  </node>
+  </node> -->
   <node pkg="gps2vsl" type="middleway.py" name="middleway" output="screen" respawn="true" respawn_delay="2">
-    <param name="/use_sim_time" value="true"/>
-   </node>
+  </node>
 /
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
