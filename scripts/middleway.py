@@ -43,9 +43,9 @@ radar15_topic = "/car/radar/track_a15"
 
 # gantry = None
 vsl_set_speed = None
-social_limit_v = None
+social_limit_v = 0
 base_social_limit = 2
-distance_lines = None
+distance_lines = 0
 max_speed = 32 ##32 m/s is 71.6 mph
 velocity = None
 radar0,radar1,radar2,radar3,radar4,radar5,radar6,radar7 = None,None,None,None,None,None,None,None
@@ -72,7 +72,7 @@ def distance_lines_callback(data):
     if distance_lines >0:
         social_limit_v = base_social_limit*distance_lines
     else:
-        social_limit_v = base_social_limit
+        social_limit_v = base_social_limit #the acc system is not on
     print('Social limit is: ',social_limit_v)
 
 def radar0_callback(data):
@@ -205,6 +205,7 @@ class middleway:
                 global max_speed
                 global social_limit_v
                 global middle_set_speed_pub
+                global vsl_set_speed
 
                 avg_v, std_v = getPrevailingSpeed()
                 print('Radar avg: ',avg_v,'Radar STDev: ',std_v)
