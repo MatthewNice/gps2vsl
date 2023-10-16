@@ -159,7 +159,6 @@ def addRadarPoint(point):
 def getPrevailingSpeed():
     """returns the mean and standard deviation of object measurements in the last 5 seconds"""
     return np.mean(radar_state[2]),np.std(radar_state[2])
-
 # radar_state can do avg speeds, max speeds, or approx. distribution
 # this means that a lane-independent control will be pulled faster by passing cars even if the car ahead is going slower
 
@@ -211,7 +210,8 @@ class middleway:
 
                 avg_v, std_v = getPrevailingSpeed()
                 prevailing_speed_pub.publish(avg_v)
-                print('Radar avg: ',avg_v,'Radar STDev: ',std_v)
+                # print('Radar avg: ',avg_v,'Radar STDev: ',std_v)
+                print('25th%: ', np.quantile(radar_state[2],0.25),'50th%: ', np.quantile(radar_state[2],0.5),'75th%: ', np.quantile(radar_state[2],0.75))
                 # print(avg_v,social_limit_v,vsl_set_speed,max_speed)
                 practical_vsl_set_speed = vsl_set_speed
                 if vsl_set_speed == None:
