@@ -209,6 +209,7 @@ class middleway:
 
                 avg_v, std_v = getPrevailingSpeed()
                 print('Radar avg: ',avg_v,'Radar STDev: ',std_v)
+                print(avg_v,social_limit_v,vsl_set_speed,max_speed)
                 middle_set_speed_pub.publish(min(max(avg_v-social_limit_v,vsl_set_speed), max_speed))
             except Exception as e:
                 print(e)
