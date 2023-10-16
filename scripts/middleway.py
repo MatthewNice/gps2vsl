@@ -66,7 +66,8 @@ def vsl_set_speed_callback(data):
 
 def distance_lines_callback(data):
     global distance_lines
-    global base_social_limit, social_limit_v
+    global base_social_limit
+    global social_limit_v
     distance_lines = data.data
     social_limit_v = base_social_limit*distance_lines
 
