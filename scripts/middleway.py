@@ -73,7 +73,7 @@ def distance_lines_callback(data):
         social_limit_v = base_social_limit*distance_lines
     else:
         social_limit_v = base_social_limit #the acc system is not on
-    print('Social limit is: ',social_limit_v)
+    # print('Social limit is: ',social_limit_v)
 
 def radar0_callback(data):
     global radar0
@@ -213,7 +213,7 @@ class middleway:
                 # print('Radar avg: ',avg_v,'Radar STDev: ',std_v)
                 print()
                 print('min: ', np.min(radar_state[2]), 'max: ', np.max(radar_state[2]))
-                print('25th%: ', np.quantile(radar_state[2],0.25),'50th%: ', np.quantile(radar_state[2],0.5),'75th%: ', np.quantile(radar_state[2],0.75))
+                print('25th%: ', np.quantile(radar_state[2],0.25),'Mean: ',avg_v,'50th%: ', np.quantile(radar_state[2],0.5),'75th%: ', np.quantile(radar_state[2],0.75))
                 # print(avg_v,social_limit_v,vsl_set_speed,max_speed)
                 practical_vsl_set_speed = vsl_set_speed
                 if vsl_set_speed == None:
