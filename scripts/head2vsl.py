@@ -46,7 +46,7 @@ gantry=None
 last_gantry=None
 myGantry=None
 
-gps_fix_topic = "gps_fix"
+gps_fix_topic = "/car/gps/fix"#formerly "gps_fix"
 gps_fix_time_reference_topic = "gps_fix_time"
 bearing_topic = "vsl/heading"
 # velocity_topic = "vel"
