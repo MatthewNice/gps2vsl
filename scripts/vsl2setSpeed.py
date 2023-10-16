@@ -18,7 +18,6 @@ from shapely.ops import nearest_points
 from shapely import Polygon
 import json
 
-# velocity_topic = "vel"
 gantry_topic = "/vsl/latest_gantry"
 
 gantry = None

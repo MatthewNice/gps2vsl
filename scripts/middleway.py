@@ -20,7 +20,9 @@ import pandas as pd
 import json
 
 velocity_topic = "/car/state/vel_x"
-gantry_topic = "/vsl/latest_gantry"
+# gantry_topic = "/vsl/latest_gantry"
+vsl_set_speed_topic = "/vsl/set_speed"
+distance_lines_topoc="acc/set_distance"
 
 radar0_topic = "/car/radar/track_a0"
 radar1_topic = "/car/radar/track_a1"
@@ -39,7 +41,12 @@ radar13_topic = "/car/radar/track_a13"
 radar14_topic = "/car/radar/track_a14"
 radar15_topic = "/car/radar/track_a15"
 
-gantry = None
+# gantry = None
+vsl_set_speed = None
+social_limit_v = None
+base_social_limit = 2
+distance_lines = None
+max_speed = 32 ##32 m/s is 71.6 mph
 velocity = None
 radar0,radar1,radar2,radar3,radar4,radar5,radar6,radar7 = None,None,None,None,None,None,None,None
 radar8,radar9,radar10,radar11,radar12,radar13,radar14,radar15 = None,None,None,None,None,None,None,None
@@ -52,6 +59,16 @@ def gantry_callback(data):
 def velocity_callback(data):
     global velocity
     velocity = data.data
+
+def vsl_set_speed_callback(data):
+    global vsl_set_speed
+    vsl_set_speed = data.data
+
+def distance_lines_callback(data):
+    global distance_lines
+    global base_social_limit, social_limit_v
+    distance_lines = data.data
+    social_limit_v = base_social_limit*distance_lines
 
 def radar0_callback(data):
     global radar0
@@ -146,8 +163,10 @@ class middleway:
     def __init__(self):
         rospy.init_node('middleway', anonymous=True)
 
-        rospy.Subscriber(gantry_topic,Int16,gantry_callback)
+        # rospy.Subscriber(gantry_topic,Int16,gantry_callback)
         rospy.Subscriber(velocity_topic,Float64,velocity_callback)
+        rospy.Subscriber(vsl_set_speed_topic,Float64,vsl_set_speed_callback)
+        rospy.Subscriber(distance_lines_topic,Int16,distance_lines_callback)
 
         rospy.Subscriber(radar0_topic,PointStamped,radar0_callback)
         rospy.Subscriber(radar1_topic,PointStamped,radar1_callback)
@@ -167,7 +186,7 @@ class middleway:
         rospy.Subscriber(radar14_topic,PointStamped,radar14_callback)
         rospy.Subscriber(radar15_topic,PointStamped,radar15_callback)
 
-
+        middle_set_speed = rospy.Publsher('/vsl/middleway_speed', Float64, queue_size=1000)
         # global in_i24_pub
         # in_i24_pub = rospy.Publisher('/vsl/in_i24', Bool, queue_size=10)
         # global vsl_set_speed_pub
@@ -175,14 +194,13 @@ class middleway:
         self.rate = rospy.Rate(20)
 
     def loop(self):
-
         while not rospy.is_shutdown():
-            #print('trying stuff')
-            # getVSLspeeds()
+            global max_speed
+            global social_limit_v
             try:
                 avg_v, std_v = getPrevailingSpeed()
                 print(avg_v)
-
+                middle_set_speed.publish(min(max(avg_v-social_limit_v,vsl_set_speed), max_speed))
             except Exception as e:
                 print(e)
                 traceback.print_exc()

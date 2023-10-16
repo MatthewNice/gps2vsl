@@ -27,15 +27,17 @@ car_setpoint = 0
 
 vsl_good = False
 
-velocity_topic = "vel"
+# velocity_topic = "vel"
+velocity_topic = "/car/state/vel_x"
 # gantry_topic = "/vsl/latest_gantry"
 
 #controls allowed
 libpanda_controls_allowed_topic = "/car/libpanda/controls_allowed"
 #setpoint readers
-car_setpoint_topic = "v_ref"#"/pcm_cruise_2" #"/car/setpoint" #currently located at msg_467
+# car_setpoint_topic = "v_ref"#"/pcm_cruise_2" #"/car/setpoint" #currently located at msg_467
+car_setpoint_topic = "/acc/set_speed"
 #vsl set speed
-vsl_set_speed_topic = "/vsl/set_speed"
+vsl_set_speed_topic = "/vsl/set_speed" ###this will need to change @######
 #is i24
 in_i24_topic = "/vsl/in_i24"
 vsl_good_topic = "/vsl/vsl_good"
@@ -56,17 +58,23 @@ class vslmux:
         # rospy.Subscriber(in_i24_topic,Bool,self.in_i24_callback)
         rospy.Subscriber(libpanda_controls_allowed_topic,Bool,self.libpanda_controls_allowed_callback)
         rospy.Subscriber(vsl_set_speed_topic,Float64,self.vsl_set_speed_callback)
-        rospy.Subscriber(car_setpoint_topic,Twist,self.car_setpoint_callback)
-        rospy.Subscriber(velocity_topic,Twist,self.velocity_callback)
+        rospy.Subscriber(car_setpoint_topic,Int16,self.car_setpoint_callback)
+        rospy.Subscriber(velocity_topic,Float64,self.velocity_callback)
         rospy.Subscriber(vsl_good_topic,Bool,self.vsl_good_callback)
 
     def velocity_callback(self,data):
+        # if not self.libpanda_controls_allowed:
+        #     self.pub_float.data = data.linear.x#velocity
+        #     self.mux_set_speed_pub.publish(self.pub_float)
         if not self.libpanda_controls_allowed:
-            self.pub_float.data = data.linear.x#velocity
+            self.pub_float.data = data.data#velocity
             self.mux_set_speed_pub.publish(self.pub_float)
     def car_setpoint_callback(self,data):
+        # if (self.libpanda_controls_allowed) & (not self.vsl_good):
+        #     self.pub_float.data = data.linear.x#car_setpoint
+        #     self.mux_set_speed_pub.publish(self.pub_float)
         if (self.libpanda_controls_allowed) & (not self.vsl_good):
-            self.pub_float.data = data.linear.x#car_setpoint
+            self.pub_float.data = data.data#car_setpoint
             self.mux_set_speed_pub.publish(self.pub_float)
     def vsl_set_speed_callback(self,data):
         if (self.libpanda_controls_allowed) & (self.vsl_good):

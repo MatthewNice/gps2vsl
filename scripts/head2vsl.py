@@ -49,7 +49,8 @@ myGantry=None
 gps_fix_topic = "gps_fix"
 gps_fix_time_reference_topic = "gps_fix_time"
 bearing_topic = "vsl/heading"
-velocity_topic = "vel"
+# velocity_topic = "vel"
+velocity_topic = "/car/state/vel_x"
 
 gpstime = None
 systime = None
@@ -84,7 +85,8 @@ def bearing_callback(data):
 
 def velocity_callback(data):
     global velocity
-    velocity = data.linear.x
+    # velocity = data.linear.x
+     velocity = data.data
 
 def get_direction(bearing):
     #set status of direction as bearing-related switch/case
@@ -238,7 +240,7 @@ class head2vsl:
         rospy.Subscriber(gps_fix_topic, NavSatFix, gps_fix_callback)
         rospy.Subscriber(gps_fix_time_reference_topic, TimeReference, gps_fix_time_reference_callback)
         rospy.Subscriber(bearing_topic, Int16, bearing_callback)
-        rospy.Subscriber(velocity_topic,Twist,velocity_callback)
+        rospy.Subscriber(velocity_topic,Float64,velocity_callback)
 
         global in_i24_pub
         in_i24_pub = rospy.Publisher('/vsl/in_i24', Bool, queue_size=10)
