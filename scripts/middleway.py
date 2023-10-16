@@ -186,6 +186,7 @@ class middleway:
         rospy.Subscriber(radar14_topic,PointStamped,radar14_callback)
         rospy.Subscriber(radar15_topic,PointStamped,radar15_callback)
 
+        global middle_set_speed_pub
         middle_set_speed_pub = rospy.Publisher('/vsl/middleway_speed', Float64, queue_size=1000)
         # global in_i24_pub
         # in_i24_pub = rospy.Publisher('/vsl/in_i24', Bool, queue_size=10)
