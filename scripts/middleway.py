@@ -22,7 +22,7 @@ import json
 velocity_topic = "/car/state/vel_x"
 # gantry_topic = "/vsl/latest_gantry"
 vsl_set_speed_topic = "/vsl/set_speed"
-distance_lines_topic="acc/set_distance"
+distance_lines_topic="/acc/set_distance"
 
 radar0_topic = "/car/radar/track_a0"
 radar1_topic = "/car/radar/track_a1"
