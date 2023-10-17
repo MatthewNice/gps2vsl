@@ -7,6 +7,7 @@ from sensor_msgs.msg import NavSatFix, TimeReference
 import traceback
 import os
 import sys
+import time
 import requests
 import time
 import bisect
@@ -50,7 +51,7 @@ max_speed = 32 ##32 m/s is 71.6 mph
 velocity = None
 radar0,radar1,radar2,radar3,radar4,radar5,radar6,radar7 = None,None,None,None,None,None,None,None
 radar8,radar9,radar10,radar11,radar12,radar13,radar14,radar15 = None,None,None,None,None,None,None,None
-radar_state = [[],[],[]]#nested list, x, y, relv
+radar_state = [[],[],[],[]]#nested list, x, y, relv,time
 
 def gantry_callback(data):
     global gantry
@@ -78,87 +79,123 @@ def distance_lines_callback(data):
 def radar0_callback(data):
     global radar0
     radar0 = data.point
-    addRadarPoint(radar0)
+    timeradar0 = data.header.stamp.secs
+    addRadarPoint(radar0,timeradar0)
 def radar1_callback(data):
     global radar1
     radar1 = data.point
-    addRadarPoint(radar1)
+    timeradar1 = data.header.stamp.secs
+    addRadarPoint(radar1,timeradar1)
 def radar2_callback(data):
     global radar2
     radar2 = data.point
-    addRadarPoint(radar2)
+    timeradar2 = data.header.stamp.secs
+    addRadarPoint(radar2,timeradar2)
 def radar3_callback(data):
     global radar3
     radar3 = data.point
-    addRadarPoint(radar3)
+    timeradar3 = data.header.stamp.secs
+    addRadarPoint(radar3,timeradar3)
 def radar4_callback(data):
     global radar4
     radar4 = data.point
-    addRadarPoint(radar4)
+    timeradar4 = data.header.stamp.secs
+    addRadarPoint(radar4,timeradar4)
 def radar5_callback(data):
     global radar5
     radar5 = data.point
-    addRadarPoint(radar5)
+    timeradar5 = data.header.stamp.secs
+    addRadarPoint(radar5,timeradar5)
 def radar6_callback(data):
     global radar6
     radar6 = data.point
-    addRadarPoint(radar6)
+    timeradar6 = data.header.stamp.secs
+    addRadarPoint(radar6,timeradar6)
 def radar7_callback(data):
     global radar7
     radar7 = data.point
-    addRadarPoint(radar7)
+    timeradar7 = data.header.stamp.secs
+    addRadarPoint(radar7,timeradar7)
 
 def radar8_callback(data):
     global radar8
     radar8 = data.point
-    addRadarPoint(radar8)
+    timeradar8 = data.header.stamp.secs
+    addRadarPoint(radar8,timeradar8)
 def radar9_callback(data):
     global radar9
     radar9 = data.point
-    addRadarPoint(radar9)
+    timeradar9 = data.header.stamp.secs
+    addRadarPoint(radar9,timeradar9)
 def radar10_callback(data):
     global radar10
     radar10 = data.point
-    addRadarPoint(radar10)
+    timeradar10 = data.header.stamp.secs
+    addRadarPoint(radar10,timeradar10)
 def radar11_callback(data):
     global radar11
     radar11 = data.point
-    addRadarPoint(radar11)
+    timeradar11 = data.header.stamp.secs
+    addRadarPoint(radar11,timeradar11)
 def radar12_callback(data):
     global radar12
     radar12 = data.point
-    addRadarPoint(radar12)
+    timeradar12 = data.header.stamp.secs
+    addRadarPoint(radar12,timeradar12)
 def radar13_callback(data):
     global radar13
     radar13 = data.point
-    addRadarPoint(radar13)
+    timeradar13 = data.header.stamp.secs
+    addRadarPoint(radar13,timeradar13)
 def radar14_callback(data):
     global radar14
     radar14 = data.point
-    addRadarPoint(radar14)
+    timeradar14 = data.header.stamp.secs
+    addRadarPoint(radar14,timeradar14)
 def radar15_callback(data):
     global radar15
     radar15 = data.point
-    addRadarPoint(radar15)
+    timeradar15 = data.header.stamp.secs
+    addRadarPoint(radar15,timeradar15)
 
-def addRadarPoint(point):
+def addRadarPoint(point,time):
     """adding a point to the state of the radar system"""
     global radar_state
     global velocity
-    radar_state[0].append(point.x)#longitude distance
-    radar_state[1].append(point.y)#lateral distance
-    radar_state[2].append(point.z + velocity)#relative velocity
+    if point.z >= 0:
+        radar_state[0].append(point.x)#longitude distance
+        radar_state[1].append(point.y)#lateral distance
+        radar_state[2].append(point.z + velocity)#relative velocity_topic
+        radar_state[3].append(time)#time stamp second
 
-    while len(radar_state[0]) >= 1600: #5 second history of 16 tracks at 20 hz
-        radar_state[0].pop(0) #pop the oldest stuff
-        radar_state[1].pop(0)
-        radar_state[2].pop(0)
+    # while len(radar_state[0]) >= 1600: #5 second history of 16 tracks at 20 hz
+    #     radar_state[0].pop(0) #pop the oldest stuff
+    #     radar_state[1].pop(0)
+    #     radar_state[2].pop(0)
+    recursivePop()
+
+def recursivePop():
+    global radar_state
+    if len(radar_state[3]) !=0:
+        oldest_time = radar_state[3].pop(0)
+        if abs(oldest_time - time.time()) > 5:
+            radar_state[0].pop(0) #pop the oldest stuff
+            radar_state[1].pop(0)
+            radar_state[2].pop(0)
+            recursivePop()
+        else:
+            radar_state[3].insert(oldest_time,0)
+    else:
+        return
 #TODO
 # using the radar_state, calculate and publish the prevailing vel of
 # the traffic overall, (or a lane by lane approximation?)
 def getPrevailingSpeed():
     """returns the mean and standard deviation of object measurements in the last 5 seconds"""
-    return np.mean(radar_state[2]),np.std(radar_state[2])
+    if len(radar_state[2]) !=0:
+        return np.mean(radar_state[2]),np.std(radar_state[2])
+    else:
+        return 0,0
 # radar_state can do avg speeds, max speeds, or approx. distribution
 # this means that a lane-independent control will be pulled faster by passing cars even if the car ahead is going slower
 
@@ -207,17 +244,18 @@ class middleway:
                 global social_limit_v
                 global middle_set_speed_pub
                 global vsl_set_speed
+                global velocity
 
                 avg_v, std_v = getPrevailingSpeed()
                 prevailing_speed_pub.publish(avg_v)
                 # print('Radar avg: ',avg_v,'Radar STDev: ',std_v)
-                print()
-                print('min: ', np.min(radar_state[2]), 'max: ', np.max(radar_state[2]))
-                print('25th%: ', np.quantile(radar_state[2],0.25),'Mean: ',avg_v,'50th%: ', np.quantile(radar_state[2],0.5),'75th%: ', np.quantile(radar_state[2],0.75))
+                # print()
+                # print('min: ', np.min(radar_state[2]), 'max: ', np.max(radar_state[2]))
+                # print('25th%: ', np.quantile(radar_state[2],0.25),'Mean: ',avg_v,'50th%: ', np.quantile(radar_state[2],0.5),'75th%: ', np.quantile(radar_state[2],0.75))
                 # print(avg_v,social_limit_v,vsl_set_speed,max_speed)
                 practical_vsl_set_speed = vsl_set_speed
                 if vsl_set_speed == None:
-                    practical_vsl_set_speed = 0 #when there is no vsl present
+                    practical_vsl_set_speed = velocity #when there is no vsl present
                 middle_set_speed_pub.publish(min(max(avg_v-social_limit_v,practical_vsl_set_speed), max_speed))
             except Exception as e:
                 print(e)
