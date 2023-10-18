@@ -21,7 +21,7 @@ else
 fi
 popd
 
-runuser -l $LIBPANDA_USER -c /etc/libpanda.d/apps/vsl/installRosPackagesForMidVsl.sh
+runuser -l $LIBPANDA_USER -c /etc/libpanda.d/apps/middleway_vsl/installRosPackagesForMidVsl.sh
 
 echo "Installing Middleway VSL demo..."
 # runuser -l $LIBPANDA_USER -c /etc/libpanda.d/apps/vsl/installMidVslController.sh
