@@ -32,6 +32,6 @@ rosrun robot_upstart install gps2vsl/launch/${LAUNCH_FILE} --user root
 
 echo "Enabling can_to_ros startup script"
 sudo systemctl daemon-reload
-sudo systemctl enable middleway
+sudo systemctl enable gps2vsl
 popd
 echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
