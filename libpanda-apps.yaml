@@ -1,5 +1,5 @@
 apps:
-  - name: middleway
+  - name: middleway_vsl
     properties:
       - owns_panda: true
     dependencies:
