@@ -11,14 +11,14 @@ LIBPANDA_USER=$(cat /etc/libpanda.d/libpanda_usr)
 
 source /home/$LIBPANDA_USER/.bashrc
 
-if [ -d /home/$LIBPANDA_USER/strym ]; then
-    pushd /home/$LIBPANDA_USER/strym
-    git pull
-else
-    pushd /home/$LIBPANDA_USER/
-    git clone https://github.com/jmscslgroup/strym
-fi
-popd
+# if [ -d /home/$LIBPANDA_USER/strym ]; then
+#     pushd /home/$LIBPANDA_USER/strym
+#     git pull
+# else
+#     pushd /home/$LIBPANDA_USER/
+#     git clone https://github.com/jmscslgroup/strym
+# fi
+# popd
 
 runuser -l $LIBPANDA_USER -c /etc/libpanda.d/apps/vsl/installRosPackagesForVsl.sh
 
