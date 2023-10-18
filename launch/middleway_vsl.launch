@@ -27,7 +27,7 @@
   <!-- this needs to be changed to be pulled into the middlway app directly -->
   <!-- <include file="$(find can_to_ros)/launch/vehicle_control_integrated_cbf_vsl.launch">
   </include> -->
-<!-- <node pkg="can_to_ros" type="vehicle_interface" name="vehicle_interface" output="screen" respawn="true" respawn_delay="2" />-->
+<node pkg="can_to_ros" type="vehicle_interface" name="vehicle_interface" output="screen" respawn="true" respawn_delay="2" />
   <node pkg="can_to_ros" type ="subs" name="subs" output="screen" if="$(arg hwil)">
 	</node>
   <include file="$(find can_to_ros)launch/safety_checks.launch" />
