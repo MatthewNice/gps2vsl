@@ -26,7 +26,7 @@ runuser -l $LIBPANDA_USER -c /etc/libpanda.d/apps/vsl/installRosPackagesForMidVs
 echo "Installing Middleway VSL demo..."
 # runuser -l $LIBPANDA_USER -c /etc/libpanda.d/apps/vsl/installMidVslController.sh
 pushd /home/$LIBPANDA_USER/catkin_ws
-runuser -l $LIBPANDA_USER -c catkin_make
+runuser -l $LIBPANDA_USER -c 'source /opt/ros/noetic/setup.bash && catkin_make'
 source devel/setup.sh
 rosrun robot_upstart install ${LAUNCH_FILE} --user root
 
