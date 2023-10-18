@@ -158,16 +158,16 @@ def radar15_callback(data):
     timeradar15 = data.header.stamp.secs
     addRadarPoint(radar15,timeradar15)
 
-def addRadarPoint(point,time):
+def addRadarPoint(point,t):
     """adding a point to the state of the radar system"""
     global radar_state
     global velocity
-    if point.z >= 0:
+    if point.z > 0:
         radar_state[0].append(point.x)#longitude distance
         radar_state[1].append(point.y)#lateral distance
         radar_state[2].append(point.z + velocity)#relative velocity_topic
-        radar_state[3].append(time)#time stamp second
-
+        radar_state[3].append(time.time())#time stamp second
+        print('added point: ',point.z+velocity, 'length',len(radar_state[2]))
     # while len(radar_state[0]) >= 1600: #5 second history of 16 tracks at 20 hz
     #     radar_state[0].pop(0) #pop the oldest stuff
     #     radar_state[1].pop(0)
@@ -178,13 +178,14 @@ def recursivePop():
     global radar_state
     if len(radar_state[3]) !=0:
         oldest_time = radar_state[3].pop(0)
+        #print(oldest_time, time.time())
         if abs(oldest_time - time.time()) > 5:
             radar_state[0].pop(0) #pop the oldest stuff
             radar_state[1].pop(0)
             radar_state[2].pop(0)
             recursivePop()
         else:
-            radar_state[3].insert(oldest_time,0)
+            radar_state[3].insert(0,oldest_time)
     else:
         return
 #TODO
@@ -192,7 +193,7 @@ def recursivePop():
 # the traffic overall, (or a lane by lane approximation?)
 def getPrevailingSpeed():
     """returns the mean and standard deviation of object measurements in the last 5 seconds"""
-    if len(radar_state[2]) !=0:
+    if len(radar_state[2]) >= 100:
         return np.mean(radar_state[2]),np.std(radar_state[2])
     else:
         return 0,0
