@@ -167,7 +167,7 @@ def addRadarPoint(point,t):
         radar_state[1].append(point.y)#lateral distance
         radar_state[2].append(point.z + velocity)#relative velocity_topic
         radar_state[3].append(time.time())#time stamp second
-        print('added point: ',point.z+velocity, 'length',len(radar_state[2]))
+        # print('added point: ',point.z+velocity, 'length',len(radar_state[2]))
     # while len(radar_state[0]) >= 1600: #5 second history of 16 tracks at 20 hz
     #     radar_state[0].pop(0) #pop the oldest stuff
     #     radar_state[1].pop(0)

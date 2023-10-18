@@ -22,7 +22,7 @@ bearing = 0.0
 
 
 gps_fix_topic = "/car/gps/fix"#formerly "gps_fix"
-gps_fix_time_reference_topic = "/car/gps/fix"#formerly "gps_fix_time"
+gps_fix_time_reference_topic = "/car/gps/fix_time"#formerly "gps_fix_time"
 gpstime = None
 systime = None
 latitude = None
