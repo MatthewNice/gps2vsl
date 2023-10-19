@@ -32,7 +32,7 @@
 	</node>
   <include file="$(find can_to_ros)launch/safety_checks.launch" />
 
-<!--  <node pkg="can_to_ros" type ="rosbag_record.sh" name="bashscript2" output="screen" args="$(arg description) $(arg hwil)" />-->
+ <node pkg="can_to_ros" type ="rosbag_record.sh" name="bashscript2" output="screen" args="$(arg description) $(arg hwil)" />
 
   <!-- ramp from mux to velocity_controller (PID) -->
   <node pkg="can_to_ros" type="ramp" name="ramp" output="screen">
