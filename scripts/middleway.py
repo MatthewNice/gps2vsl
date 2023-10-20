@@ -20,6 +20,8 @@ import pandas as pd
 import json
 
 velocity_topic = "/car/state/vel_x"
+sport_mode_topic = "car/state/sport_mode"
+eco_mode_topic = "car/state/eco_mode"
 # gantry_topic = "/vsl/latest_gantry"
 vsl_set_speed_topic = "/vsl/set_speed"
 distance_lines_topic="/acc/set_distance"
@@ -52,6 +54,17 @@ velocity = None
 radar0,radar1,radar2,radar3,radar4,radar5,radar6,radar7 = None,None,None,None,None,None,None,None
 radar8,radar9,radar10,radar11,radar12,radar13,radar14,radar15 = None,None,None,None,None,None,None,None
 radar_state = [[],[],[],[]]#nested list, x, y, relv,time
+sport_mode=0
+eco_mode=0
+normal=0
+
+def sport_mode_callback(data):
+    global sport_mode
+    sport_mode=data.data
+
+def eco_mode_callback(data):
+    global eco_mode
+    eco_mode=data.data
 
 def gantry_callback(data):
     global gantry
@@ -67,14 +80,14 @@ def vsl_set_speed_callback(data):
 
 def distance_lines_callback(data):
     global distance_lines
-    global base_social_limit
-    global social_limit_v
+    # global base_social_limit
+    # global social_limit_v
     distance_lines = data.data
-    if distance_lines >0:
-        social_limit_v = base_social_limit*distance_lines
-    else:
-        social_limit_v = base_social_limit #the acc system is not on
-    # print('Social limit is: ',social_limit_v)
+    # if distance_lines >0:
+    #     social_limit_v = base_social_limit*distance_lines
+    # else:
+    #     social_limit_v = base_social_limit #the acc system is not on
+    # # print('Social limit is: ',social_limit_v)
 
 def radar0_callback(data):
     global radar0
@@ -209,6 +222,8 @@ class middleway:
         rospy.Subscriber(velocity_topic,Float64,velocity_callback)
         rospy.Subscriber(vsl_set_speed_topic,Float64,vsl_set_speed_callback)
         rospy.Subscriber(distance_lines_topic,Int16,distance_lines_callback)
+        rospy.Subscriber(sport_mode_topic,Bool,sport_mode_callback)
+        rospy.Subscriber(eco_mode_topic,Bool,eco_mode_callback)
 
         rospy.Subscriber(radar0_topic,PointStamped,radar0_callback)
         rospy.Subscriber(radar1_topic,PointStamped,radar1_callback)
@@ -246,7 +261,17 @@ class middleway:
                 global middle_set_speed_pub
                 global vsl_set_speed
                 global velocity
+                global sport_mode
+                global eco_mode
+                global normal
+                global base_social_limit
 
+                if sport_mode:
+                    social_limit_v = base_social_limit*1
+                elif eco_mode:
+                    social_limit_v = base_social_limit*3
+                else:
+                    social_limit_v = base_social_limit*2
                 avg_v, std_v = getPrevailingSpeed()
                 prevailing_speed_pub.publish(avg_v)
                 # print('Radar avg: ',avg_v,'Radar STDev: ',std_v)
