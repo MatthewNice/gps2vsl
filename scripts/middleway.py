@@ -247,6 +247,8 @@ class middleway:
         middle_set_speed_pub = rospy.Publisher('/vsl/middleway_speed', Float64, queue_size=1000)
         global prevailing_speed_pub
         prevailing_speed_pub = rospy.Publisher('/vsl/ego_radar/prevailing_speed', Float64, queue_size=1000)
+        global prevailing_speed_offset_pub
+        prevailing_speed_offset_pub = rospy.Publisher('/vsl/v_pr_offset', Float64, queue_size=1000)
         # global in_i24_pub
         # in_i24_pub = rospy.Publisher('/vsl/in_i24', Bool, queue_size=10)
         # global vsl_set_speed_pub
@@ -272,6 +274,8 @@ class middleway:
                     social_limit_v = base_social_limit*3
                 else:
                     social_limit_v = base_social_limit*2
+                prevailing_speed_offset_pub.publish(social_limit_v)
+                
                 avg_v, std_v = getPrevailingSpeed()
                 prevailing_speed_pub.publish(avg_v)
                 # print('Radar avg: ',avg_v,'Radar STDev: ',std_v)
