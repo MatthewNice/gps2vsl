@@ -66,7 +66,7 @@
   <!-- <node pkg="gps2vsl" type="float2twist.py" name="float2twist" output="screen">
     <remap if="$(eval not vsl_hwil_test)" from="/vsl/twist_out" to="/cmd_vel"/>
   </node> -->
-  <node pkg="gps2vsl" type="middleway.py" name="middleway" output="screen" respawn="true" respawn_delay="2">
+  <node pkg="gps2vsl" type="lead_vel_processing.py" name="lead_vel_processing" output="screen" respawn="true" respawn_delay="2">
   </node>
 /
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->

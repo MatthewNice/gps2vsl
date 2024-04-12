@@ -19,7 +19,7 @@ import pandas as pd
 # from shapely import Polygon
 import json
 
-velocity_topic = "/car/state/vel_x"
+# velocity_topic = "/car/state/vel_x"
 # sport_mode_topic = "car/state/sport_mode"
 # eco_mode_topic = "car/state/eco_mode"
 # gantry_topic = "/vsl/latest_gantry"
@@ -52,15 +52,15 @@ social_limit_v = 0
 base_social_limit = 2
 distance_lines = 0
 max_speed = 32 ##32 m/s is 71.6 mph
-velocity = None
+# velocity = None
 lead_x=252
 lead_rv=0
 radar0,radar1,radar2,radar3,radar4,radar5,radar6,radar7 = None,None,None,None,None,None,None,None
 radar8,radar9,radar10,radar11,radar12,radar13,radar14,radar15 = None,None,None,None,None,None,None,None
 radar_state = [[],[],[],[]]#nested list, x, y, relv,time
-sport_mode=0
-eco_mode=0
-normal=0
+# sport_mode=0
+# eco_mode=0
+# normal=0
 
 # def sport_mode_callback(data):
 #     global sport_mode
@@ -190,7 +190,7 @@ def addRadarPoint(point,t):
     if point.z > 0:
         radar_state[0].append(point.x)#longitude distance
         radar_state[1].append(point.y)#lateral distance
-        radar_state[2].append(point.z + velocity)#relative velocity_topic
+        radar_state[2].append(point.z)#relative velocity_topic
         radar_state[3].append(time.time())#time stamp second
         # print('added point: ',point.z+velocity, 'length',len(radar_state[2]))
     # while len(radar_state[0]) >= 1600: #5 second history of 16 tracks at 20 hz
@@ -204,7 +204,7 @@ def recursivePop():
     if len(radar_state[3]) !=0:
         oldest_time = radar_state[3].pop(0)
         #print(oldest_time, time.time())
-        if abs(oldest_time - time.time()) > 1:
+        if abs(oldest_time - time.time()) > 0.1:
             radar_state[0].pop(0) #pop the oldest stuff
             radar_state[1].pop(0)
             radar_state[2].pop(0)
@@ -216,43 +216,104 @@ def recursivePop():
 
 
 ###Make a function to estimate the lead velocity more precisely by matching to the lead_ x
+# points_near_lead_dist = []
+# max_x_diff = 5.0
+# max_y_diff = 5.0
+# max_rel_vel_diff = 1.0
+# for t in range(len(lead_dist)):
+#     points_near_lead_dist.append([])
+#     for i in range(num_tracks):
+#         x_coord = track_coords[i][0][t]
+#         y_coord = track_coords[i][1][t]
+#         ds_dt_track = rel_speed_list[i][t]
+#         if(np.abs(y_coord) < max_y_diff):
+#             dist = lead_dist[t]
+#             ds_dt = rel_vel[t]
+#             if(np.abs(dist - x_coord) < max_x_diff):
+# #                 points_near_lead_dist[t].append(i)
+#                 # In a [1 x 2] box of lead_dist right in front
+#                 if(np.abs(ds_dt_track - ds_dt) < max_rel_vel_diff):
+#                     points_near_lead_dist[t].append(i)
 
-def get_better_lead_v():
-    global radar_state
-    global lead_x
-    global lead_rv
+def get_box_filtered_radar():
+    global radar_state #list of list of most recent radar points
+    global lead_x #lead_dist
+    global lead_rv #rel_vel
     ### Use a box to filter
-    matched_values=[]
-    x_max = 0.75 #m
-    y_max = 2 #m
-    rv_max = 0.5 #m/s
 
-    for i in range(len(radar_state[3])):
-        if abs(radar_state[0][i]-(lead_x+0.5)< x_max: ###instead of floor to the nearest meter, centering to middle of meter
-            if abs(radar_state[1][i])< y_max: #currently making a straight road assumption
-                if abs(radar_state[2][i]-lead_rv)< rv_max:
-                    # these points are probably the matching points
-                    matched_values.append(radar_state[2][i]) #this is the velocity of the leader when observed
+    # This is default, sends nothing
+    mean_box_filtered_radar_dist = 300.0
+    mean_box_filtered_radar_rel_vel = 0.0
 
-    if len(matched_values)==0:
-        new_lead_v = lead_rv
-    else:
-        minimum=None
+    dists_in_the_box = []
+    rel_vels_in_the_box = []
+
+    max_x_diff = 5.0
+    max_y_diff = 5.0
+    max_rel_vel_diff = 1.0
+
+    x_coords = radar_state[0]
+    y_coords = radar_state[1]
+    ds_dt_tracks = radar_state[2]
+
+    num_current_tracks = len(x_coords)
+
+    for i in range(num_current_tracks):
+
+        x = x_coords[i]
+        y = y_coords[i]
+
+        ds_dt_radar = ds_dt_tracks[i]
+
+        if(np.abs(y) < max_y_diff):
+            ds_dt = rel_vel[t]
+            if(np.abs(lead_x - x) < max_x_diff):
+#                 points_near_lead_dist[t].append(i)
+                # In a [1 x 2] box of lead_dist right in front
+                if(np.abs(ds_dt_radar - lead_rv) < max_rel_vel_diff):
+                    radar_dist = np.sqrt(x**2 + y**2)
+                    radar_rel_vel = ds_dt_radar
+
+                    dists_in_the_box.append(radar_dist)
+                    rel_vels_in_the_box.append(radar_rel_vel)
+
+    if(len(dists_in_the_box)>0):
+        mean_box_filtered_radar_dist = np.mean(dists_in_the_box)
+        mean_box_filtered_radar_rel_vel = np.mean(rel_vels_in_the_box)
+
+    return mean_box_filtered_radar_dist,mean_box_filtered_radar_rel_vel
+
+    # matched_values=[]
+    # x_max = 0.75 #m
+    # y_max = 2 #m
+    # rv_max = 0.5 #m/s
+    #
+    # for i in range(len(radar_state[3])):
+    #     if abs(radar_state[0][i]-(lead_x+0.5)< x_max: ###instead of floor to the nearest meter, centering to middle of meter
+    #         if abs(radar_state[1][i])< y_max: #currently making a straight road assumption
+    #             if abs(radar_state[2][i]-lead_rv)< rv_max:
+    #                 # these points are probably the matching points
+    #                 matched_values.append(radar_state[2][i]) #this is the velocity of the leader when observed
+    #
+    # if len(matched_values)==0:
+    #     new_lead_v = lead_rv
+    # else:
+    #     new_lead_v = mat
+    #
+    #
+    # return new_lead_v
 
 
-    return new_lead_v
-
-
-class middleway:
+class lead_estimator:
     def __init__(self):
-        rospy.init_node('middleway', anonymous=True)
+        rospy.init_node('lead_estimator', anonymous=True)
 
         # rospy.Subscriber(gantry_topic,Int16,gantry_callback)
-        rospy.Subscriber(velocity_topic,Float64,velocity_callback)
-        rospy.Subscriber(vsl_set_speed_topic,Float64,vsl_set_speed_callback)
-        rospy.Subscriber(distance_lines_topic,Int16,distance_lines_callback)
-        rospy.Subscriber(sport_mode_topic,Bool,sport_mode_callback)
-        rospy.Subscriber(eco_mode_topic,Bool,eco_mode_callback)
+        # rospy.Subscriber(velocity_topic,Float64,velocity_callback)
+        # rospy.Subscriber(vsl_set_speed_topic,Float64,vsl_set_speed_callback)
+        # rospy.Subscriber(distance_lines_topic,Int16,distance_lines_callback)
+        # rospy.Subscriber(sport_mode_topic,Bool,sport_mode_callback)
+        # rospy.Subscriber(eco_mode_topic,Bool,eco_mode_callback)
 
         rospy.Subscriber(lead_x_topic, Float64, lead_x_callback)
         rospy.Subscriber(lead_rv_topic, Float64, lead_rv_callback)
@@ -275,12 +336,17 @@ class middleway:
         rospy.Subscriber(radar14_topic,PointStamped,radar14_callback)
         rospy.Subscriber(radar15_topic,PointStamped,radar15_callback)
 
-        global middle_set_speed_pub
-        middle_set_speed_pub = rospy.Publisher('/vsl/middleway_speed', Float64, queue_size=1000)
-        global prevailing_speed_pub
-        prevailing_speed_pub = rospy.Publisher('/vsl/ego_radar/prevailing_speed', Float64, queue_size=1000)
-        global prevailing_speed_offset_pub
-        prevailing_speed_offset_pub = rospy.Publisher('/vsl/v_pr_offset', Float64, queue_size=1000)
+        # global middle_set_speed_pub
+        # middle_set_speed_pub = rospy.Publisher('/vsl/middleway_speed', Float64, queue_size=1000)
+        # global prevailing_speed_pub
+        # prevailing_speed_pub = rospy.Publisher('/vsl/ego_radar/prevailing_speed', Float64, queue_size=1000)
+        # global prevailing_speed_offset_pub
+        # prevailing_speed_offset_pub = rospy.Publisher('/vsl/v_pr_offset', Float64, queue_size=1000)
+        global radar_rv_pub
+        radar_rv_pub = rospy.Publisher('/radar_rv_estimate')
+        global radar_dist_estimate_pub
+        radar_dist_estimate_pub = rospy.Publisher('/radar_dist_estimate')
+
         # global in_i24_pub
         # in_i24_pub = rospy.Publisher('/vsl/in_i24', Bool, queue_size=10)
         # global vsl_set_speed_pub
@@ -290,35 +356,42 @@ class middleway:
     def loop(self):
         while not rospy.is_shutdown():
             try:
-                global max_speed
-                global social_limit_v
-                global middle_set_speed_pub
-                global vsl_set_speed
-                global velocity
-                global sport_mode
-                global eco_mode
-                global normal
-                global base_social_limit
+                global radar_rv_pub
+                global radar_dist_estimate_pub
 
-                if sport_mode:
-                    social_limit_v = base_social_limit*1
-                elif eco_mode:
-                    social_limit_v = base_social_limit*3
-                else:
-                    social_limit_v = base_social_limit*2
-                prevailing_speed_offset_pub.publish(social_limit_v)
+                radar_dist_estimated,radar_rv = get_box_filtered_radar()
 
-                avg_v, std_v = getPrevailingSpeed()
-                prevailing_speed_pub.publish(avg_v)
-                # print('Radar avg: ',avg_v,'Radar STDev: ',std_v)
-                # print()
-                # print('min: ', np.min(radar_state[2]), 'max: ', np.max(radar_state[2]))
-                # print('25th%: ', np.quantile(radar_state[2],0.25),'Mean: ',avg_v,'50th%: ', np.quantile(radar_state[2],0.5),'75th%: ', np.quantile(radar_state[2],0.75))
-                # print(avg_v,social_limit_v,vsl_set_speed,max_speed)
-                practical_vsl_set_speed = vsl_set_speed
-                if vsl_set_speed == None:
-                    practical_vsl_set_speed = velocity #when there is no vsl present
-                middle_set_speed_pub.publish(min(max(avg_v-social_limit_v,practical_vsl_set_speed), max_speed))
+                radar_dist_estimate_pub.publish(radar_dist_estimate)
+                radar_rv_pub.publish(radar_rv)
+                # global max_speed
+                # global social_limit_v
+                # global middle_set_speed_pub
+                # global vsl_set_speed
+                # global velocity
+                # global sport_mode
+                # global eco_mode
+                # global normal
+                # global base_social_limit
+                #
+                # if sport_mode:
+                #     social_limit_v = base_social_limit*1
+                # elif eco_mode:
+                #     social_limit_v = base_social_limit*3
+                # else:
+                #     social_limit_v = base_social_limit*2
+                # prevailing_speed_offset_pub.publish(social_limit_v)
+                #
+                # avg_v, std_v = getPrevailingSpeed()
+                # prevailing_speed_pub.publish(avg_v)
+                # # print('Radar avg: ',avg_v,'Radar STDev: ',std_v)
+                # # print()
+                # # print('min: ', np.min(radar_state[2]), 'max: ', np.max(radar_state[2]))
+                # # print('25th%: ', np.quantile(radar_state[2],0.25),'Mean: ',avg_v,'50th%: ', np.quantile(radar_state[2],0.5),'75th%: ', np.quantile(radar_state[2],0.75))
+                # # print(avg_v,social_limit_v,vsl_set_speed,max_speed)
+                # practical_vsl_set_speed = vsl_set_speed
+                # if vsl_set_speed == None:
+                #     practical_vsl_set_speed = velocity #when there is no vsl present
+                # middle_set_speed_pub.publish(min(max(avg_v-social_limit_v,practical_vsl_set_speed), max_speed))
             except Exception as e:
                 print(e)
                 traceback.print_exc()
@@ -327,7 +400,7 @@ class middleway:
 
 if __name__ == '__main__':
     try:
-        head = middleway()
+        head = lead_estimator()
         head.loop()
     except Exception as e:
         print(e)
