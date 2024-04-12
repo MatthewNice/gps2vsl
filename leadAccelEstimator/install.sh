@@ -23,7 +23,7 @@ source /home/$LIBPANDA_USER/.bashrc
 
 runuser -l $LIBPANDA_USER -c /etc/libpanda.d/apps/leadAccelEstimator/installRosPackages.sh
 
-echo "Installing {APP_NAME_PRETTY}..."
+echo "Installing leadAccelEstimator..."
 # runuser -l $LIBPANDA_USER -c /etc/libpanda.d/apps/vsl/installMidVslController.sh
 pushd /home/$LIBPANDA_USER/catkin_ws
 runuser -l $LIBPANDA_USER -c 'source /opt/ros/noetic/setup.bash && cd catkin_ws && catkin_make'
