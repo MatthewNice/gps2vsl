@@ -55,7 +55,7 @@
 
   <arg name="connect_mux" default="false"/>
 <!--  <arg name="vsl_hwil_test" default="true"/>-->
-
+  <node pkg="gps2vsl" type="lead_vel_processing.py" name="leadVelProcessing" output="screen" />
   <node pkg="gps2vsl" type="gps2head.py" name="gps2head" output="screen" />
   <node pkg="gps2vsl" type="head2vsl.py" name="head2vsl" output="screen" />
   <node pkg="gps2vsl" type="vsl2setSpeed.py" name="vsl2setSpeed" output="screen" />
@@ -66,8 +66,7 @@
   <!-- <node pkg="gps2vsl" type="float2twist.py" name="float2twist" output="screen">
     <remap if="$(eval not vsl_hwil_test)" from="/vsl/twist_out" to="/cmd_vel"/>
   </node> -->
-  <node pkg="gps2vsl" type="lead_vel_processing.py" name="leadVelProcessing" output="screen" respawn="true" respawn_delay="2">
-  </node>
+
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
 
