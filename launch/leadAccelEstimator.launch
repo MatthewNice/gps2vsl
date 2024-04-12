@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <!-- Controller Launches. Velocity Controller, and CBF -->
+  <node pkg="velocity_controller" type="velocity_controller" name="velocity_controller" output="screen">
+		<remap from="/cmd_accel" to="/cmd_accel_pre"/>
+	</node>
+
+  <arg name="description" default="cbf_codegen_test"/>
+
+	<arg name="margin" default="30.0"/>
+	<arg name="use_margin" default="false"/>
+	<arg name="hwil" default="true"/>
+	<arg name="readonly" default="false"/>
+	<arg name="vsl_hwil_test" default="false"/>
+
+  <node pkg="cbf" type="cbf" name="cbf" if="$(eval not readonly and hwil)">
+	</node>
+
+	<!-- <node pkg="cbf" type="cbf" name="cbf_readonly" if="$(eval not readonly and hwil)">
+		<remap from="/cmd_accel" to="/cmd_accel_null"/>
+	</node> -->
+  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <!-- CAN_to_ROS launches, for vehicle interface, subs, rosbag record and safety_checks(?) -->
+  <!-- launching the old vsl application -->
+  <!-- this needs to be changed to be pulled into the middlway app directly -->
+  <!-- <include file="$(find can_to_ros)/launch/vehicle_control_integrated_cbf_vsl.launch">
+  </include> -->
+<node pkg="can_to_ros" type="vehicle_interface" name="vehicle_interface" output="screen" respawn="true" respawn_delay="2" />
+  <node pkg="can_to_ros" type ="subs" name="subs" output="screen" if="$(arg hwil)">
+	</node>
+  <include file="$(find can_to_ros)launch/safety_checks.launch" />
+
+ <node pkg="can_to_ros" type ="rosbag_record.sh" name="bashscript2" output="screen" args="$(arg description) $(arg hwil)" />
+
+  <!-- ramp from mux to velocity_controller (PID) -->
+  <node pkg="can_to_ros" type="ramp" name="ramp" output="screen">
+  	<!-- /ramp_in : Float64 -->
+  	<remap from="/ramp_in" to="/mux/set_speed"/>
+  	<!-- /ramp_out: Float64 -->
+  	<!-- <remap if="$(eval not vsl_hwil_test)" from="/ramp_out" to="/cmd_vel"/> -->
+    <remap from="/ramp_out" to="/cmd_vel"/>
+  	<!-- ramp_max_rate_up: default 1, defines max increase rate of output -->
+  	<param name="/ramp_max_rate_up" value="1.5"/>
+  	<!-- ramp_max_rate_down: default 1, defines max decrease rate of output -->
+  	<param name="/ramp_max_rate_down" value="2"/>
+  	<!--ramp_publish_rate: defualt 10Hz, defines output publish rate for potentially idle input -->
+  	<param name="/ramp_publish_rate" value="10"/>
+
+  </node>
+  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <!-- gps2vsl and middlway nodes -->
+
+  <arg name="connect_mux" default="false"/>
+<!--  <arg name="vsl_hwil_test" default="true"/>-->
+
+  <node pkg="gps2vsl" type="gps2head.py" name="gps2head" output="screen" />
+  <node pkg="gps2vsl" type="head2vsl.py" name="head2vsl" output="screen" />
+  <node pkg="gps2vsl" type="vsl2setSpeed.py" name="vsl2setSpeed" output="screen" />
+  <node pkg="gps2vsl" type="vslmux.py" name="vslmux" output="screen">
+    <!-- remapping subscriber for mux vsl/set_speed becomes vsl/middleway_speed -->
+    <remap from="/vsl/set_speed" to="/vsl/middleway_speed"/>
+  </node>
+  <!-- <node pkg="gps2vsl" type="float2twist.py" name="float2twist" output="screen">
+    <remap if="$(eval not vsl_hwil_test)" from="/vsl/twist_out" to="/cmd_vel"/>
+  </node> -->
+  <node pkg="gps2vsl" type="middleway.py" name="middleway" output="screen" respawn="true" respawn_delay="2">
+  </node>
+/
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+
+</launch>
