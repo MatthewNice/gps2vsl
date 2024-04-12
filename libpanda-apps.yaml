@@ -37,7 +37,7 @@ apps:
           repo: setpointreader
         - owner: MatthewNice
           repo: gps2vsl
-  - name: lead_accel_estimator
+  - name: leadAccelEstimator
     properties:
       - owns_panda: true
     dependencies:
