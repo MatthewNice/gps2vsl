@@ -67,8 +67,15 @@ class mpt:
         while not rospy.is_shutdown():
             try:
                 global mpt_pub
+                global cmd_accel_pre
+                global velocity
+                global lead_rv
+                global lead_x
+
                 state=np.array([[velocity],[velocity+lead_rv],[lead_x]]).reshape((3,1))
-                mpt_value = mpc_accel(state)
+                mpt_accel_max = mpc_accel(state)
+
+                mpt_value = min(cmd_accel_pre,mpt_accel_max)
 
                 mpt_pub.publish(mpt_value)
 
