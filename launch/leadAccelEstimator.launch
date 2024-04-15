@@ -55,10 +55,11 @@
 
   <arg name="connect_mux" default="false"/>
 <!--  <arg name="vsl_hwil_test" default="true"/>-->
-  <node pkg="gps2vsl" type="lead_vel_processing.py" name="lead_vel_processing" output="screen" />
+
   <node pkg="gps2vsl" type="gps2head.py" name="gps2head" output="screen" />
   <node pkg="gps2vsl" type="head2vsl.py" name="head2vsl" output="screen" />
   <node pkg="gps2vsl" type="vsl2setSpeed.py" name="vsl2setSpeed" output="screen" />
+  <node pkg="gps2vsl" type="leadVelProcessing.py" name="leadVelProcessing" output="screen" />
   <node pkg="gps2vsl" type="vslmux.py" name="vslmux" output="screen">
     <!-- remapping subscriber for mux vsl/set_speed becomes vsl/middleway_speed -->
     <remap from="/vsl/set_speed" to="/vsl/middleway_speed"/>
