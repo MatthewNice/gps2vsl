@@ -56,3 +56,4 @@ apps:
           repo: setpointreader
         - owner: MatthewNice
           repo: gps2vsl
+          branch_or_hash: mpt

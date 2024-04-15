@@ -15,6 +15,8 @@
 	<arg name="vsl_hwil_test" default="false"/>
 
   <node pkg="cbf" type="cbf" name="cbf" if="$(eval not readonly and hwil)">
+    <remap from="/cmd_accel" to="/cmd_accel_null"/>
+<!-- making the CBF lead to nowhere -->
 	</node>
 
 	<!-- <node pkg="cbf" type="cbf" name="cbf_readonly" if="$(eval not readonly and hwil)">
@@ -56,10 +58,12 @@
   <arg name="connect_mux" default="false"/>
 <!--  <arg name="vsl_hwil_test" default="true"/>-->
 
+  <node pkg="gps2vsl" type="mpt_controller.py" name="mpt_controller" output="screen">
+
   <node pkg="gps2vsl" type="gps2head.py" name="gps2head" output="screen" />
   <node pkg="gps2vsl" type="head2vsl.py" name="head2vsl" output="screen" />
   <node pkg="gps2vsl" type="vsl2setSpeed.py" name="vsl2setSpeed" output="screen" />
-  <node pkg="gps2vsl" type="leadVelProcessing.py" name="leadVelProcessing" output="screen" />
+  <!-- <node pkg="gps2vsl" type="leadVelProcessing.py" name="leadVelProcessing" output="screen" /> -->
   <node pkg="gps2vsl" type="vslmux.py" name="vslmux" output="screen">
     <!-- remapping subscriber for mux vsl/set_speed becomes vsl/middleway_speed -->
     <remap from="/vsl/set_speed" to="/vsl/middleway_speed"/>
