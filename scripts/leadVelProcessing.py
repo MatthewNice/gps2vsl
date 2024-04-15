@@ -61,7 +61,7 @@ radar_state = [[],[],[],[]]#nested list, x, y, relv,time
 # sport_mode=0
 # eco_mode=0
 # normal=0
-radar_dist_estimate, radar_rv = None
+radar_dist_estimate, radar_rv = None, None
 
 # def sport_mode_callback(data):
 #     global sport_mode
@@ -188,11 +188,11 @@ def addRadarPoint(point,t):
     """adding a point to the state of the radar system"""
     global radar_state
     global velocity
-    if point.z > 0:
-        radar_state[0].append(point.x)#longitude distance
-        radar_state[1].append(point.y)#lateral distance
-        radar_state[2].append(point.z)#relative velocity_topic
-        radar_state[3].append(time.time())#time stamp second
+    
+    radar_state[0].append(point.x)#longitude distance
+    radar_state[1].append(point.y)#lateral distance
+    radar_state[2].append(point.z)#relative velocity_topic
+    radar_state[3].append(time.time())#time stamp second
         # print('added point: ',point.z+velocity, 'length',len(radar_state[2]))
     # while len(radar_state[0]) >= 1600: #5 second history of 16 tracks at 20 hz
     #     radar_state[0].pop(0) #pop the oldest stuff
@@ -251,7 +251,7 @@ def get_box_filtered_radar():
 
     max_x_diff = 5.0
     max_y_diff = 5.0
-    max_rel_vel_diff = 1.0
+    max_rel_vel_diff = 5.0
 
     x_coords = radar_state[0]
     y_coords = radar_state[1]
@@ -267,21 +267,24 @@ def get_box_filtered_radar():
         ds_dt_radar = ds_dt_tracks[i]
 
         if(np.abs(y) < max_y_diff):
-            ds_dt = rel_vel[t]
+            ds_dt = lead_rv #relative speed from 869 msg
             if(np.abs(lead_x - x) < max_x_diff):
 #                 points_near_lead_dist[t].append(i)
-                # In a [1 x 2] box of lead_dist right in front
+                print('points exist in box')
+# In a [1 x 2] box of lead_dist right in front
                 if(np.abs(ds_dt_radar - lead_rv) < max_rel_vel_diff):
                     radar_dist = np.sqrt(x**2 + y**2)
                     radar_rel_vel = ds_dt_radar
 
                     dists_in_the_box.append(radar_dist)
                     rel_vels_in_the_box.append(radar_rel_vel)
+                else:
+                    print('rel vels do not match')
 
     if(len(dists_in_the_box)>0):
         mean_box_filtered_radar_dist = np.mean(dists_in_the_box)
         mean_box_filtered_radar_rel_vel = np.mean(rel_vels_in_the_box)
-
+        print('found point')
     return mean_box_filtered_radar_dist,mean_box_filtered_radar_rel_vel
 
     # matched_values=[]
