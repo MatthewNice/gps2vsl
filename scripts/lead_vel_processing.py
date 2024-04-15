@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Author: Matt Nice
+#!/usr/bin/python3
+
 import rospy
 from std_msgs.msg import Float64, Int16, String, Bool
 from geometry_msgs.msg import PointStamped
