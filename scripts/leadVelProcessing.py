@@ -61,6 +61,7 @@ radar_state = [[],[],[],[]]#nested list, x, y, relv,time
 # sport_mode=0
 # eco_mode=0
 # normal=0
+radar_dist_estimate, radar_rv = None
 
 # def sport_mode_callback(data):
 #     global sport_mode
@@ -359,7 +360,7 @@ class lead_estimator:
                 global radar_rv_pub
                 global radar_dist_estimate_pub
 
-                radar_dist_estimated,radar_rv = get_box_filtered_radar()
+                radar_dist_estimate,radar_rv = get_box_filtered_radar()
 
                 radar_dist_estimate_pub.publish(radar_dist_estimate)
                 radar_rv_pub.publish(radar_rv)
