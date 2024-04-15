@@ -610,6 +610,8 @@ class mpt:
 
         global mpt_pub
         mpt_pub = rospy.Publisher('/cmd_accel', Float64, queue_size=1000)
+        global mpt_readout_pub
+        mpt_readout_pub = rospy.Publisher('/cmd_accel_mpt', Float64, queue_size=1000)
 
         self.rate = rospy.Rate(20)
 
@@ -618,6 +620,7 @@ class mpt:
             try:
                 global mpt_pub
                 global cmd_accel_pre
+                global mpt_readout_pub
                 global velocity
                 global lead_rv
                 global lead_x
@@ -628,6 +631,7 @@ class mpt:
                 mpt_value = min(cmd_accel_pre,mpt_accel_max)
 
                 mpt_pub.publish(mpt_value)
+                mpt_readout_pub.publish(mpt_accel_max)
 
             except Exception as e:
                 print(e)
