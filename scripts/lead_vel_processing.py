@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 
 import rospy
 from std_msgs.msg import Float64, Int16, String, Bool
