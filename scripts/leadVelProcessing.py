@@ -343,9 +343,9 @@ class lead_estimator:
         # global prevailing_speed_offset_pub
         # prevailing_speed_offset_pub = rospy.Publisher('/vsl/v_pr_offset', Float64, queue_size=1000)
         global radar_rv_pub
-        radar_rv_pub = rospy.Publisher('/radar_rv_estimate')
+        radar_rv_pub = rospy.Publisher('/radar_rv_estimate', Float64, queue_size=1000)
         global radar_dist_estimate_pub
-        radar_dist_estimate_pub = rospy.Publisher('/radar_dist_estimate')
+        radar_dist_estimate_pub = rospy.Publisher('/radar_dist_estimate',Float64, queue_size=1000)
 
         # global in_i24_pub
         # in_i24_pub = rospy.Publisher('/vsl/in_i24', Bool, queue_size=10)
