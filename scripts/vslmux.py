@@ -58,6 +58,7 @@ class vslmux:
         self.libpanda_controls_allowed = False
         global avg_v
         global social_limit_v
+        global vel
 
         #map this to the desired speed topic
         self.mux_set_speed_pub = rospy.Publisher('/mux/set_speed', Float64, queue_size=1000)
@@ -77,6 +78,9 @@ class vslmux:
         # if not self.libpanda_controls_allowed:
         #     self.pub_float.data = data.linear.x#velocity
         #     self.mux_set_speed_pub.publish(self.pub_float)
+        global vel
+        vel = data.data
+
         if not self.libpanda_controls_allowed:
             self.pub_float.data = data.data#velocity
             self.mux_set_speed_pub.publish(self.pub_float)
@@ -88,14 +92,19 @@ class vslmux:
         if (not last_controls_allowed) & (self.libpanda_controls_allowed): ##controls allowed flipped on
             entry_velocity_setting = data.data#car_setpoint
 
+
             ##publish the value of the car setpoint saved from the entry when controls allowed last switched from 0 to 1
         global max_speed
         global avg_v
         global social_limit_v
+        global vel
+        if entry_velocity_setting == None:
+            entry_velocity_setting = vel
+            
         if (self.libpanda_controls_allowed) & (not self.vsl_good):
             # self.pub_float.data = data.data#car_setpoint
 
-            offline_middle_vel = min(max(avg_v-social_limit_v,entry_velocity_setting), max_speed))
+            offline_middle_vel = min(max(vel+avg_v-social_limit_v,entry_velocity_setting), max_speed))
             self.pub_float.data = offline_middle_vel
             self.mux_set_speed_pub.publish(self.pub_float)
     def vsl_set_speed_callback(self,data):
