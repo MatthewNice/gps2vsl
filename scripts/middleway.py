@@ -275,7 +275,7 @@ class middleway:
                 else:
                     social_limit_v = base_social_limit*2
                 prevailing_speed_offset_pub.publish(social_limit_v)
-                
+
                 avg_v, std_v = getPrevailingSpeed()
                 prevailing_speed_pub.publish(avg_v)
                 # print('Radar avg: ',avg_v,'Radar STDev: ',std_v)
