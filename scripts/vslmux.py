@@ -31,6 +31,7 @@ vsl_good = False
 
 avg_v = 0.0
 social_limit_v = 0.0
+last_controls_allowed = False
 
 # velocity_topic = "vel"
 velocity_topic = "/car/state/vel_x"
@@ -106,7 +107,7 @@ class vslmux:
         if (self.libpanda_controls_allowed) & (not self.vsl_good):
             # self.pub_float.data = data.data#car_setpoint
 
-            offline_middle_vel = min(max(vel+avg_v-social_limit_v,entry_velocity_setting), max_speed)
+            offline_middle_vel = min(max(avg_v-social_limit_v,entry_velocity_setting), max_speed)
             self.pub_float.data = offline_middle_vel
             self.mux_set_speed_pub.publish(self.pub_float)
     def vsl_set_speed_callback(self,data):
