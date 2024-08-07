@@ -25,6 +25,8 @@ libpanda_controls_allowed = False
 vsl_set_speed = 0
 car_setpoint = 0
 
+entry_velocity_setting = 0
+
 vsl_good = False
 
 # velocity_topic = "vel"
@@ -73,8 +75,14 @@ class vslmux:
         # if (self.libpanda_controls_allowed) & (not self.vsl_good):
         #     self.pub_float.data = data.linear.x#car_setpoint
         #     self.mux_set_speed_pub.publish(self.pub_float)
+        global last_controls_allowed
+        if (not last_controls_allowed) & (self.libpanda_controls_allowed): ##controls allowed flipped on
+            entry_velocity_setting = data.data#car_setpoint
+
+            ##publish the value of the car setpoint saved from the entry when controls allowed last switched from 0 to 1
         if (self.libpanda_controls_allowed) & (not self.vsl_good):
-            self.pub_float.data = data.data#car_setpoint
+            # self.pub_float.data = data.data#car_setpoint
+            self.pub_float.data = entry_velocity_setting
             self.mux_set_speed_pub.publish(self.pub_float)
     def vsl_set_speed_callback(self,data):
         if (self.libpanda_controls_allowed) & (self.vsl_good):
@@ -85,7 +93,11 @@ class vslmux:
         self.vsl_good = data.data
 
     def libpanda_controls_allowed_callback(self,data):
-        self.libpanda_controls_allowed = data.data
+        global last_controls_allowed
+        last_controls_allowed = self.libpanda_controls_allowed ##save last value
+
+        self.libpanda_controls_allowed = data.data ##update to new value
+
 
 
 
