@@ -89,6 +89,7 @@ class vslmux:
         #     self.pub_float.data = data.linear.x#car_setpoint
         #     self.mux_set_speed_pub.publish(self.pub_float)
         global last_controls_allowed
+        global entry_velocity_setting
         if (not last_controls_allowed) & (self.libpanda_controls_allowed): ##controls allowed flipped on
             entry_velocity_setting = data.data#car_setpoint
 
@@ -98,6 +99,7 @@ class vslmux:
         global avg_v
         global social_limit_v
         global vel
+
         if entry_velocity_setting == None:
             entry_velocity_setting = vel
 
@@ -121,10 +123,10 @@ class vslmux:
 
         self.libpanda_controls_allowed = data.data ##update to new value
 
-    def prevailing_speed_callback(data):
+    def prevailing_speed_callback(self,data):
         global avg_v
         avg_v = data.data
-    def prevailing_speed_offset_callback(data):
+    def prevailing_speed_offset_callback(self,data):
         global social_limit_v
         social_limit_v = data.data
 
