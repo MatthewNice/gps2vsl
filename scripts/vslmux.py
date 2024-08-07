@@ -29,6 +29,9 @@ entry_velocity_setting = 0
 max_speed = 32 ##32 m/s is 71.6 mph
 vsl_good = False
 
+avg_v = 0.0
+social_limit_v = 0.0
+
 # velocity_topic = "vel"
 velocity_topic = "/car/state/vel_x"
 # gantry_topic = "/vsl/latest_gantry"
@@ -54,6 +57,7 @@ class vslmux:
         self.vsl_good = False
         self.libpanda_controls_allowed = False
         global avg_v
+        global social_limit_v
 
         #map this to the desired speed topic
         self.mux_set_speed_pub = rospy.Publisher('/mux/set_speed', Float64, queue_size=1000)
@@ -108,10 +112,10 @@ class vslmux:
 
         self.libpanda_controls_allowed = data.data ##update to new value
 
-    def prevailing_speed_callback(self,data):
+    def prevailing_speed_callback(data):
         global avg_v
         avg_v = data.data
-    def prevailing_speed_offset_callback(self,data):
+    def prevailing_speed_offset_callback(data):
         global social_limit_v
         social_limit_v = data.data
 
